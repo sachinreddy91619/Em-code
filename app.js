@@ -1,3 +1,5 @@
+// importing the Sentry module from the instrument.mjs file
+import Sentry from './instrument.mjs';
 
 
 import fastify from 'fastify';
@@ -6,23 +8,27 @@ import dotenv from 'dotenv';
 import eventRou from './routes/eventroutes.js';
 import authRou from './routes/authroutes.js';
 
+
+
 dotenv.config();
 
 const app = fastify({
     logger: true
 });
 
-//app.decorate('backlisted', []);
+Sentry.setupFastifyErrorHandler(app);
 
-global.backlistedTokens = ["abc",];
+//console.log(Sentry);
 console.log("the server started successfully");
 mongoose.connect(process.env.MONGO_URL)
     .then(() => {
+
         app.log.info('Database connected successfully');
         
     })
     .catch((err) => {
         app.log.error('MongoDB not connected successfully', err);
+        //Sentry.captureException(err);
        
     });
 

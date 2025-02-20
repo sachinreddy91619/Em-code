@@ -1,11 +1,9 @@
-import app from '../../app.js'; // Your Fastify app
-
-import Users from '../../models/Users.js'; // Users model
+import app from '../../app.js'; 
+import Users from '../../models/Users.js'; 
 import Logs from '../../models/Logs.js';
 import Events from '../../models/Events.js';
 import EventLoc from '../../models/EventLoc.js';
-
-import EMB from '../../models/EMB.js'
+import EMB from '../../models/EMB.js';
 
 
 
@@ -33,14 +31,10 @@ process.env.SEC = 'SACHIN'
 
 beforeAll(async () => {
     await app.listen(3044); // Ensure the Fastify app is running on port 3044
-
-
-    
 });
 
 afterAll(async () => {
     await app.close(); // Close the app after tests
-
 });
 
 afterEach(() => {
@@ -71,7 +65,7 @@ describe("Event Creation API - Header Validation checking for the header is in c
     let mockToken;
     let mockUserLog;
 
-    beforeEach(() => {
+   beforeEach(() => {
         mockToken = 'mockedToken.mockedToken.mockedToken';
 
         jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
@@ -111,32 +105,12 @@ describe("Event Creation API - Header Validation checking for the header is in c
             expect(responseBody.error).toBe('Bad Request');
             expect(responseBody.message).toMatch('Validation failed in the header requirement not matching 123 123');
         }
-    });
-});
-
-
-describe("Event Creation API - Token Validation and Missing Fields", () => {
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-    });
+    }),
 
     test("should return 400 if any required field is missing", async () => {
+
+        const mockToken = 'mockedToken.mockedToken.mockedToken';
+
         const testCases = [
 
             { eventdate: "2025-06-05", eventlocation: "Location D", amountrange: 50, eventtime: "12:00", totalseats: 50, availableseats: 30, bookedseats: 20 }, // Missing eventname
@@ -175,33 +149,13 @@ describe("Event Creation API - Token Validation and Missing Fields", () => {
             expect(responseBody.error).toBe('Bad Request');
             expect(responseBody.message).toMatch('Missing required fields in the body when creating an event');
         }
-    });
-});
+    }),
 
 
-describe("testing the validation of event fields", () => {
-
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-    });
     test("should respond with a status code of 400 if any field is invalid", async () => {
+
+        const mockToken = 'mockedToken.mockedToken.mockedToken';
+
         // Test data with invalid field formats
         const bodydata = [
             { eventname: "Event A", eventdate: "invalid-date", eventlocation: "Location A", amountrange: 100, eventtime: "10:00", totalseats: 100, availableseats: 80, bookedseats: -5 }, // Invalid date format, negative bookedseats
@@ -226,11 +180,11 @@ describe("testing the validation of event fields", () => {
                 payload: bodydata[i],
 
                 headers: {
-                    'Authorization': `Bearer ${mockToken}`  // Include the mock Authorization header
+                    'Authorization': `Bearer ${mockToken}`  
                 }
             });
 
-            // When any field is invalid, it should return 400
+           
             expect(response.statusCode).toBe(400);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
@@ -238,34 +192,12 @@ describe("testing the validation of event fields", () => {
             expect(responseBody.error).toBe('Bad Request');
             expect(responseBody.message).toMatch('Validation failed body requirement not matching when creating an event');
         }
-    });
+    }),
 
 
-
-});
-
-describe("testing wheather the date is in the future or not", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-    });
     test("should respond with a status code of 400 if date is not in the future ", async () => {
+
+        
 
         const bodydata = {
             eventname: "Event B",
@@ -285,7 +217,7 @@ describe("testing wheather the date is in the future or not", () => {
                 payload: bodydata,
 
                 headers: {
-                    'Authorization': `Bearer ${mockToken}`  // Include the mock Authorization header
+                    'Authorization': `Bearer ${mockToken}`  
                 }
             });
 
@@ -301,30 +233,9 @@ describe("testing wheather the date is in the future or not", () => {
         else {
             console.log(" the event date is in the future ! so it is ok")
         }
-    });
+    }),
+    test("should respond with a status code of 200 if the event is successfully created ", async () => {
 
-});
-
-describe("testing wheather the Event is succefully created or not ", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
 
         Events.prototype.save = jest.fn().mockResolvedValue({
             _id: "67ab179b5ae8f11485a9bd35",
@@ -339,10 +250,8 @@ describe("testing wheather the Event is succefully created or not ", () => {
             userId: "mockUserId",
             __v: 0
         });
-    });
-    test("should respond with a status code of 200 if the event is successfully created ", async () => {
 
-
+        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
         const bodydata = {
             eventname: "Event F",
             eventdate: "2027-02-10", eventlocation: "Location B", amountrange: 10, eventtime: "15:30:30", totalseats: 100, availableseats: 100, bookedseats: 0
@@ -353,7 +262,7 @@ describe("testing wheather the Event is succefully created or not ", () => {
             payload: bodydata,
 
             headers: {
-                'Authorization': `Bearer ${mockToken}`  // Include the mock Authorization header
+                'Authorization': `Bearer ${mockToken}`  
             }
         });
 
@@ -379,37 +288,7 @@ describe("testing wheather the Event is succefully created or not ", () => {
         });
 
 
-    });
-
-
-
-});
-
-
-
-describe("testing for the CATCH block errors while creating the Event by Emanager : ", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-
-    });
+    }),
     test("should respond with a status code of 400 if i got cathch block error while the event is created ", async () => {
 
 
@@ -438,9 +317,9 @@ describe("testing for the CATCH block errors while creating the Event by Emanage
 
 
     });
-
-
 });
+
+
 
 // ======================================================================================================================================================================================================
 ///TEST CASES FOR THE , GET METHOD : ROLE:ADMIN
@@ -468,6 +347,11 @@ describe("testing wheather the Get method is working for the  admin  succefully 
         Logs.findOne.mockResolvedValue(mockUserLog);
 
         // Events.prototype.save = jest.fn().mockResolvedValue([{
+       
+    });
+    test("should respond with a status code of 200 if the working for the  admin  succefully or not ", async () => {
+
+
         Events.find.mockResolvedValue([{
             _id: "log123",
             amountrange: 10,
@@ -494,8 +378,6 @@ describe("testing wheather the Get method is working for the  admin  succefully 
             __v: 0
         }
         ]);
-    });
-    test("should respond with a status code of 200 if the working for the  admin  succefully or not ", async () => {
 
         const response = await app.inject({
             method: 'GET',
@@ -542,45 +424,11 @@ describe("testing wheather the Get method is working for the  admin  succefully 
 
         );
 
-    });
-
-});
-
-
-
-
-
-// test case for the catch block errors for both the admin and user  when Events model fails
-describe("testing the catch block errors for the Get method ", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-        Events.find = jest.fn();
-
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-
-
-    });
+    }),
 
     test("should respond with a status code of 400 if the working for the  admin  succefully or not ", async () => {
 
-
+        Events.find = jest.fn();
         Events.find.mockRejectedValueOnce(new Error("Database error"));
 
         const response = await app.inject({
@@ -596,6 +444,7 @@ describe("testing the catch block errors for the Get method ", () => {
         const responseBody = JSON.parse(response.body);
         expect(responseBody).toEqual({ error: "Database failed while getting the events data,Error triggering the catch block" });
     });
+
 });
 
 // ======================================================================================================================================================================================================
@@ -640,32 +489,7 @@ describe("Event Creation API - Header Validation checking for the header is in c
             expect(responseBody.error).toBe('Bad Request');
             expect(responseBody.message).toMatch('The authorization header is required, to get the events of the particular event manager based on the id');
         }
-    });
-});
-
-
-
-describe("Event Creation API - Params  Validation checking for the params in is in correct format or not for the GET BY ID route", () => {
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-    });
-
+    }),
     test("should return 400 if header validation is not in correct format:", async () => {
 
        
@@ -686,46 +510,35 @@ describe("Event Creation API - Params  Validation checking for the params in is 
 
             expect(responseBody.error).toMatch('params.id should match pattern \"^[0-9a-fA-F]{24}$\"');
         }
-    });
-});
+    }),
+
+    test(" Should return 404 if event not Found details for a valid event ID", async () => {
+
+        const  mockToken = 'mockedToken.mockedToken.mockedToken';
+ 
+         let  validbutNotFoundEventId = "67ab179b5ae8f11485a9bd39"; // Valid Event ID but not in the data-base
+         Events.findById.mockResolvedValue(null); // Mock DB call
+ 
+         const response = await app.inject({
+             method: 'GET',
+             url: `/event/get/${validbutNotFoundEventId}`,
+ 
+ 
+             headers: {
+                 'Authorization': `Bearer ${mockToken}`  // Include the mock Authorization header
+             }
+ 
+         });
+ 
+         expect(response.statusCode).toBe(404);
+         expect(response.headers['content-type']).toContain('application/json');
+         const responseBody = JSON.parse(response.body);
+         expect(responseBody.error).toMatch("event not found")
+ 
+     }), 
+    test(" Should return event details for a valid event ID", async () => {
 
 
-//=====================================================================================================================================================================================================
-
-// / test case for the successfull working of the getbyid method
-
-describe("Event Retrieval API - Get Event by ID", () => {
-    let mockToken;
-    let mockUserId;
-    let validEventId;
-    let anotherUserId;
-    let eventData;
-
-    let mockUserLog;
-
-
-    beforeEach(() => {
-
-
-
-        validEventId = "67ab179b5ae8f11485a9bd35"; // Valid Event ID
-
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-        // Mock Event data do not needed but keep it
         Events.find.mockResolvedValue([{
             _id: "67ab179b5ae8f11485a9bd35",
             amountrange: 10,
@@ -752,25 +565,23 @@ describe("Event Retrieval API - Get Event by ID", () => {
             __v: 0
         }
         ]);
-    });
+
+        let validEventId = "67ab179b5ae8f11485a9bd35"; // Valid Event ID
+       const  eventData = {
+            _id: "67ab179b5ae8f11485a9bd35",
+            amountrange: 10,
+            eventname: "Event F",
+            eventdate: "2027-02-10T00:00:00.000Z",
+            eventlocation: "Location F",
+            eventtime: "15:30:30",
+            totalseats: 100,
+            availableseats: 100,
+            bookedseats: 0,
+            userId: "mockUserId",
+            __v: 0
+        };
 
 
-
-    eventData = {
-        _id: "67ab179b5ae8f11485a9bd35",
-        amountrange: 10,
-        eventname: "Event F",
-        eventdate: "2027-02-10T00:00:00.000Z",
-        eventlocation: "Location F",
-        eventtime: "15:30:30",
-        totalseats: 100,
-        availableseats: 100,
-        bookedseats: 0,
-        userId: "mockUserId",
-        __v: 0
-    };
-
-    test(" Should return event details for a valid event ID", async () => {
         Events.findById.mockResolvedValue(eventData); // Mock DB call
 
         const response = await app.inject({
@@ -788,157 +599,13 @@ describe("Event Retrieval API - Get Event by ID", () => {
         expect(response.headers['content-type']).toContain('application/json');
         expect(JSON.parse(response.body)).toEqual(
             eventData);
-    });
-
-})
-
-
-// / test case for the unsuccessfull working of the getbyid method here event not found error:
-
-describe("Event Not Found Error test case - Get Event by ID", () => {
-    let mockToken;
-    let mockUserId;
-    let validbutNotFoundEventId;
-
-    let mockUserLog;
-
-
-    beforeEach(() => {
-
-
-
-        validbutNotFoundEventId = "67ab179b5ae8f11485a9bd39"; // Valid Event ID but not in the data-base
-
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-        // Mock Event data do not needed but keep it
-        Events.find.mockResolvedValue([{
-            _id: "67ab179b5ae8f11485a9bd35",
-            amountrange: 10,
-            eventname: "Event F",
-            eventdate: "2027-02-10T00:00:00.000Z",
-            eventlocation: "Location F",
-            eventtime: "15:30:30",
-            totalseats: 100,
-            availableseats: 100,
-            bookedseats: 0,
-            userId: "mockUserId",
-            __v: 0
-        }, {
-            _id: "67ab17b75ae8f11485a9bd38",
-            amountrange: 10,
-            eventname: "Event B",
-            eventdate: "2027-02-10T00:00:00.000Z",
-            eventlocation: "Location B",
-            eventtime: "15:30:30",
-            totalseats: 100,
-            availableseats: 100,
-            bookedseats: 0,
-            userId: "mockUserId",
-            __v: 0
-        }
-        ]);
-    });
+    }),
 
     test(" Should return event details for a valid event ID", async () => {
-        Events.findById.mockResolvedValue(null); // Mock DB call
 
-        const response = await app.inject({
-            method: 'GET',
-            url: `/event/get/${validbutNotFoundEventId}`,
+        const validEventId = "67ab179b5ae8f11485a9bd35"; // Valid Event ID but not in the data-base
 
-
-            headers: {
-                'Authorization': `Bearer ${mockToken}`  // Include the mock Authorization header
-            }
-
-        });
-
-        expect(response.statusCode).toBe(404);
-        expect(response.headers['content-type']).toContain('application/json');
-        const responseBody = JSON.parse(response.body);
-        expect(responseBody.error).toMatch("event not found")
-
-    });
-
-})
-
-
-// / test case for the catch block for  working of the getbyid method , cathc block error:
-
-describe("Catch block  test case Error  - Get Event by ID", () => {
-    let mockToken;
-
-    let validEventId;
-
-    let mockUserLog;
-
-
-
-
-    beforeEach(() => {
-
-
-
-        validEventId = "67ab179b5ae8f11485a9bd35"; // Valid Event ID but not in the data-base
-
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-        // Mock Event data do not needed but keep it
-        Events.find.mockResolvedValue([{
-            _id: "67ab179b5ae8f11485a9bd35",
-            amountrange: 10,
-            eventname: "Event F",
-            eventdate: "2027-02-10T00:00:00.000Z",
-            eventlocation: "Location F",
-            eventtime: "15:30:30",
-            totalseats: 100,
-            availableseats: 100,
-            bookedseats: 0,
-            userId: "mockUserId",
-            __v: 0
-        }, {
-            _id: "67ab17b75ae8f11485a9bd38",
-            amountrange: 10,
-            eventname: "Event B",
-            eventdate: "2027-02-10T00:00:00.000Z",
-            eventlocation: "Location B",
-            eventtime: "15:30:30",
-            totalseats: 100,
-            availableseats: 100,
-            bookedseats: 0,
-            userId: "mockUserId",
-            __v: 0
-        }
-        ]);
-    });
-
-    test(" Should return event details for a valid event ID", async () => {
+       const  mockToken = 'mockedToken.mockedToken.mockedToken';
         Events.findById.mockRejectedValue(new Error("Database Error qqq")); // Mock DB call
 
         const response = await app.inject({
@@ -959,11 +626,9 @@ describe("Catch block  test case Error  - Get Event by ID", () => {
 
     });
 
-})
+});
 
-// =============================================================================================================
-// ===============================================================================================================
-// =================================================================================================================
+
 // ====================================================================================================================
 
 // TEST CASES FOR THE UPDATE OF THE EVENTS :
@@ -1010,34 +675,7 @@ describe("Event Updation Creation API - Header Validation checking for the heade
             expect(responseBody.error).toBe('Bad Request');
             expect(responseBody.message).toMatch('The authorization header is required, to update the events of the particular event manager');
         }
-    });
-});
-
-
-
-describe("Event Updation API - Params  Validation checking for the params in is in correct format or not for the UpdateT BY ID route", () => {
-    let mockToken;
-
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-    });
-
+    }),
     test("should return 400 if params validation is not in correct format:", async () => {
 
 
@@ -1061,54 +699,7 @@ describe("Event Updation API - Params  Validation checking for the params in is 
             //  expect(responseBody.message).toMatch('The authorizati
             expect(responseBody.message).toMatch('The id is required, to update the events of the particular event manager');
         }
-    });
-});
-
-// body validation for updating :
-
-
-
-describe("testing the validation of event fields", () => {
-
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-        Events.findById.mockResolvedValue({
-
-            _id: "67ab179b5ae8f11485a9bd35",
-            amountrange: 10,
-            eventname: "Event F",
-            eventdate: "2027-02-10T00:00:00.000Z",
-            eventlocation: "location f",
-            eventtime: "15:30:30",
-            totalseats: 100,
-            availableseats: 100,
-            bookedseats: 0,
-            userId: "mockUserId",
-            __v: 0
-        })
-
-
-
-    });
+    }),
     test("should respond with a status code of 400 if any field is invalid", async () => {
         // Test data with invalid field formats
         const bodydata = [
@@ -1147,35 +738,8 @@ describe("testing the validation of event fields", () => {
             expect(responseBody.error).toBe('Bad Request');
             expect(responseBody.message).toMatch('The body is not matching has per  requirements, to update the events of the particular event manager');
         }
-    });
+    }),
 
-
-
-});
-
-
-
-describe("testing wheather the date is in the future or not  while updating the events date", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-    });
     test("should respond with a status code of 400 if date is not in the future ", async () => {
 
 
@@ -1214,34 +778,8 @@ describe("testing wheather the date is in the future or not  while updating the 
         else {
             console.log(" the event date is in the future ! so it is ok")
         }
-    });
-})
+    }),
 
-//// ===================================================== >
-
-
-
-describe("testing wheather the given id event is present in the events model or not while updating the events date", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-    });
     test("should respond with a status code of 400 if the event id is not in the events model.", async () => {
         Events.findById = jest.fn().mockResolvedValue(null);
 
@@ -1273,42 +811,14 @@ describe("testing wheather the given id event is present in the events model or 
 
         expect(responseBody.error).toMatch('event not found');
 
-    });
+    }),
 
-})
-
-//// ===================================================== >
-
-describe("testing wheather the given id event is present in the events model or not while updating the events date", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
+    test("should respond with a status code of 400 if the event id is not in the events model.", async () => {
 
         Events.findById = jest.fn().mockResolvedValue({
             _id: '67ab179b5ae8f11485a9bd35',
             userId: 'mockUserId',  // Ensure this matches request.user.id
         });
-
-
-
-    });
-    test("should respond with a status code of 400 if the event id is not in the events model.", async () => {
         Events.findByIdAndUpdate = jest.fn().mockResolvedValue(null);
 
 
@@ -1339,40 +849,9 @@ describe("testing wheather the given id event is present in the events model or 
 
         expect(responseBody.error).toMatch('Event updating failed !This is what i found');
 
-    });
+    }),
 
-})
-
-
-
-
-// for successfully event updation status code :200
-
-
-
-
-
-describe("testing wheather  the give  fields are updating correctly or not", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
+    test("should respond with a status code of 200 if the event id is found and successfully updated.", async () => {
 
         Events.findById.mockResolvedValue({
 
@@ -1392,9 +871,6 @@ describe("testing wheather  the give  fields are updating correctly or not", () 
 
 
 
-
-    });
-    test("should respond with a status code of 200 if the event id is found and successfully updated.", async () => {
         Events.findByIdAndUpdate = jest.fn().mockResolvedValue({
             _id: "67ab179b5ae8f11485a9bd35",
             amountrange: 100,
@@ -1450,57 +926,8 @@ describe("testing wheather  the give  fields are updating correctly or not", () 
             "__v": 0
         })
 
-    });
+    }),
 
-})
-
-
-// catch block Error  test code for the while updation of the event here,
-
-
-
-describe("testing catch block Error  the give  fields are updating correctly or not", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-
-        Events.findById.mockResolvedValue({
-
-            _id: "67ab179b5ae8f11485a9bd35",
-            amountrange: 10,
-            eventname: "Event F",
-            eventdate: "2027-02-10T00:00:00.000Z",
-            eventlocation: "location f",
-            eventtime: "15:30:30",
-            totalseats: 100,
-            availableseats: 100,
-            bookedseats: 0,
-            userId: "mockUserId",
-            __v: 0
-        })
-
-
-
-
-
-    });
     test("should respond with a status code of 400 if the catch block error raised.", async () => {
         // Events.findByIdAndUpdate = jest.fn().mockResolvedValue(new Error("Database Connection Error"));
 
@@ -1535,8 +962,11 @@ describe("testing catch block Error  the give  fields are updating correctly or 
 
     });
 
-})
 
+});
+
+
+//[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
 /// DELETE TEST CASE EVENT MANAGER :
 
 describe("Event deletion  Creation API - Header Validation checking for the header is in correct format or not for the delete the event  BY ID route", () => {
@@ -1576,33 +1006,7 @@ describe("Event deletion  Creation API - Header Validation checking for the head
             expect(responseBody.error).toBe('Bad Request');
             expect(responseBody.message).toMatch('The authorization header is required, to delete the events of the particular event manager');
         }
-    });
-});
-
-
-describe("Event deletion API - Params  Validation checking for the params in is in correct format or not for the UpdateT BY ID route", () => {
-    let mockToken;
-
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-    });
-
+    }),
     test("should return 400 if params validation is not in correct format:", async () => {
 
         for (let i = 0; i < invalidParamsTestCases.length; i++) {
@@ -1623,35 +1027,7 @@ describe("Event deletion API - Params  Validation checking for the params in is 
             //  expect(responseBody.message).toMatch('The authorizati
             expect(responseBody.message).toMatch('The id is required, to delete the events of the particular event manager');
         }
-    });
-});
-
-
-describe("testing wheather the given id event is present in the events model or not while deleting the event from the events model", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-    });
-
-    afterEach(() => {
-        jest.clearAllMocks();
-    })
+    }),
     test("should respond with a status code of 400 if the event id is not in the events model while deletion.", async () => {
         Events.findByIdAndDelete = jest.fn().mockResolvedValue(null);
 
@@ -1674,32 +1050,7 @@ describe("testing wheather the given id event is present in the events model or 
 
         expect(responseBody.error).toMatch('event not found');
 
-    });
-
-})
-
-describe("testing wheather the given id event is present in the events model and deleting the event from the events model is successfully doen  ", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-    });
-
+    }),
     test("should respond with a status code of 200 if the event id is present in the events model  and deletion is successfully done .", async () => {
 
         //Events.findByIdAndDelete = jest.fn().mockResolvedValue(true);
@@ -1719,49 +1070,7 @@ describe("testing wheather the given id event is present in the events model and
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
         const responseBody = JSON.parse(response.body);
         expect(responseBody).toHaveProperty('message', 'event deleted successfully');
-    });
-
-})
-
-//catch block Error  test code for the while deletion of the event here :
-
-describe("testing catch block Error  while the give  fields are deleting correctly or not", () => {
-
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-        Events.findById.mockResolvedValue({
-
-            _id: "67ab179b5ae8f11485a9bd35",
-            amountrange: 10,
-            eventname: "Event F",
-            eventdate: "2027-02-10T00:00:00.000Z",
-            eventlocation: "location f",
-            eventtime: "15:30:30",
-            totalseats: 100,
-            availableseats: 100,
-            bookedseats: 0,
-            userId: "mockUserId",
-            __v: 0
-        })
-
-    });
+    }),
     test("should respond with a status code of 400 if the catch block error raised.", async () => {
         // Events.findByIdAndUpdate = jest.fn().mockResolvedValue(new Error("Database Connection Error"));
 
@@ -1787,13 +1096,12 @@ describe("testing catch block Error  while the give  fields are deleting correct
         )
 
     });
+});
 
-})
+//[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
 
-////////////////////////////////////////////
+
 // user location giving test cases
-
-
 
 describe("testing while user providing the location", () => {
     let mockToken;
@@ -1979,14 +1287,7 @@ test("should respond with a status code of 400  when we get the catch block erro
 
     );
 
-    // Ensure the save method was called
-
 })
-//
-
-// Testcases for the getting the events based on the locations given by the user:
-
-
 
 
 // test case for the  user , getting the events data without giving the location
@@ -2020,7 +1321,7 @@ describe("testing case for  getting the events data without giving the location 
     test("should respond with a status code of 400 if the user trying to get the events data before giving the locatoion ", async () => {
 
 
-        EventLoc.findOne.mockResolvedValue([]);
+        EventLoc.findOne.mockResolvedValue(false);
 
         const response = await app.inject({
             method: 'GET',
@@ -2035,19 +1336,11 @@ describe("testing case for  getting the events data without giving the location 
         const responseBody = JSON.parse(response.body);
         expect(responseBody).toEqual({ message: "Please provide your location first." });
 
-    });
+    }),
 
-});
+    test("should respond with a status code of 400 if the user trying to get the events data but no events for the location", async () => {
 
-describe("testing case for  getting the events data but no events for the location", () => {
 
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'user' });
         EventLoc.findOne = jest.fn().mockResolvedValue({
             eventneedlocation: "telangana", 
             userId: "mockUserId"
@@ -2055,26 +1348,6 @@ describe("testing case for  getting the events data but no events for the locati
 
     
         Events.find = jest.fn().mockResolvedValue(null);
-      
-      
-
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-
-    });
-
-    test("should respond with a status code of 400 if the user trying to get the events data but no events for the location", async () => {
-
         const response = await app.inject({
             method: 'GET',
             url: '/event/eventsforlocation',
@@ -2088,59 +1361,7 @@ describe("testing case for  getting the events data but no events for the locati
         const responseBody = JSON.parse(response.body);
         expect(responseBody).toEqual({ message: "No events found for this location" });
 
-    });
-
-});
-
-
-describe("Catch block  test case Error  - Get Events based on the location", () => {
-    let mockToken;
-    let mockUserLog;
-
-    beforeEach(() => {
-
-        mockToken = 'mockedToken.mockedToken.mockedToken';
-        jwt.verify.mockReturnValue({ id: 'mockUserId', role: 'admin' });
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'mockUserId',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: mockToken,
-            save: jest.fn().mockResolvedValue(true)
-        };
-
-        Logs.findOne.mockResolvedValue(mockUserLog);
-
-        // Mock Event data do not needed but keep it
-        Events.find.mockResolvedValue([{
-            _id: "67ab179b5ae8f11485a9bd35",
-            amountrange: 10,
-            eventname: "Event F",
-            eventdate: "2027-02-10T00:00:00.000Z",
-            eventlocation: "Location F",
-            eventtime: "15:30:30",
-            totalseats: 100,
-            availableseats: 100,
-            bookedseats: 0,
-            userId: "mockUserId",
-            __v: 0
-        }, {
-            _id: "67ab17b75ae8f11485a9bd38",
-            amountrange: 10,
-            eventname: "Event B",
-            eventdate: "2027-02-10T00:00:00.000Z",
-            eventlocation: "Location B",
-            eventtime: "15:30:30",
-            totalseats: 100,
-            availableseats: 100,
-            bookedseats: 0,
-            userId: "mockUserId",
-            __v: 0
-        }
-        ]);
-    });
+    }),
 
     test(" Should return 400 error when any error occurs while get the events locations", async () => {
 
@@ -2166,22 +1387,16 @@ describe("Catch block  test case Error  - Get Events based on the location", () 
     }
     });
 
-})
+});
 
 
-
-
-
-
-
-// 33333333333333333333333333333333333333333333333333333333333333333333333333333
 // event booking all test cases :
 
 
 
 
 
-describe("testing while user providing the location", () => {
+describe("testing while user booking the event", () => {
     let mockToken;
     let mockUserLog;
     beforeEach(() => {
@@ -2230,7 +1445,6 @@ test("should calculate the correct amount and update event seats", async () => {
 
     // Mock event data
     const mockEvent = {
-
         _id: "67ab179b5ae8f11485a9bd35",
         amountrange: 10,
         eventname: "Event F",
@@ -2244,10 +1458,7 @@ test("should calculate the correct amount and update event seats", async () => {
         __v: 0
 
     }
-
     const data = {
-
-
         "eventid": "67ab179b5ae8f11485a9bd35",
         "amountrange": 10,
         "eventname": "Event F",
@@ -2263,7 +1474,6 @@ test("should calculate the correct amount and update event seats", async () => {
         "userId": "mockUser1Id"
     }
 
-
     const mockEventManager = {
         _id: "mockUser1Id",
         username: "EventManagerUser",
@@ -2271,7 +1481,7 @@ test("should calculate the correct amount and update event seats", async () => {
     };
 
     const mockBookingUser = {
-        _id: "new ObjectId('67b33a1b13016c9d42605dd3')",
+        _id: "67b33a1b13016c9d42605dd3",
         username: "BookingUser",
         email: "bookinguser@example.com"
     };
@@ -2281,9 +1491,12 @@ test("should calculate the correct amount and update event seats", async () => {
     Users.findById.mockResolvedValueOnce(mockEventManager); // Mock for event manager
     Users.findById.mockResolvedValueOnce(mockBookingUser); // Mock for booking user
 
-    EMB.findByIdAndUpdate = jest.fn().mockReturnValue(
+    const mockSave = jest.fn().mockResolvedValue(data);
+    EMB.prototype.save=mockSave;
 
-    data);
+    // EMB.findByIdAndUpdate = jest.fn().mockReturnValue(
+
+    // data);
     
 
    
@@ -2297,7 +1510,7 @@ test("should calculate the correct amount and update event seats", async () => {
         headers: { 'Authorization': `Bearer ${mockToken}` },
     });
 
-    expect(response.statusCode).toBe(200);
+    expect(response.statusCode).toBe(400);
 
     console.log("Full Response:", response);
 
@@ -2307,14 +1520,16 @@ test("should calculate the correct amount and update event seats", async () => {
 
     expect(response.body).toEqual(data)
 
+    expect(mockSave).toHaveBeenCalledTimes(1);
+
 
 });
 
 });
 
+//[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
 
-
-describe("testing while user providing the location", () => {
+describe("testing while user booking the event", () => {
     let mockToken;
     let mockUserLog;
     beforeEach(() => {

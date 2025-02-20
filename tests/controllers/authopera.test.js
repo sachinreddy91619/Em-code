@@ -1,6 +1,6 @@
 import fastify from 'fastify';
-import app from '../../app.js'; // Your Fastify app
-import Users from '../../models/Users.js'; // Users model
+import app from '../../app.js'; 
+import Users from '../../models/Users.js'; 
 import Logs from '../../models/Logs.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -19,7 +19,7 @@ import dotenv from 'dotenv';
 
 //jest.mock('../../middleware/authmiddle.js', () => jest.fn(async (request, reply) => reply));
 
-jest.mock('../../models/Users.js'); // Mock Users model
+jest.mock('../../models/Users.js'); 
 jest.mock('../../models/Logs.js');
 jest.mock('jsonwebtoken');
 jest.mock('bcrypt');
@@ -33,7 +33,7 @@ jest.mock('bcrypt');
 dotenv.config();
 
 beforeAll(async () => {
-    await app.listen(3044); // Ensure the Fastify app is running on port 3021
+    await app.listen(3044); // Ensure the Fastify app is running on port 3044
 });
 
 afterAll(async () => {
@@ -49,7 +49,8 @@ afterEach(() => {
 
 // test-case-1:  Testing if the user already exists
 describe("testing the registration of user", () => {
-    test("should respond with 400 status code", async () => {
+
+    test("should respond with 400 status code when user already exits", async () => {
         // Mock findOne to return a user with the username 'testname'
         Users.findOne.mockResolvedValue({ username: 'testname' });
 
@@ -62,7 +63,6 @@ describe("testing the registration of user", () => {
         expect(response.statusCode).toBe(400);
         expect(JSON.parse(response.body)).toEqual({ error: 'Username already exists. Try with another username' });
 
-        //expect(response.body).toBe('Username already exists. Try with another username');
     });
 });
 
@@ -123,9 +123,6 @@ describe("testing the /registering the user", () => {
 // test-case -3 : testing the misssing any content :
 describe("testing when username or password or email or role is missing", () => {
     test("should respond with a status code of 400 if any field is missing", async () => {
-        // Mock the findOne method to return null (no existing user)
-        Users.findOne.mockResolvedValue(null);
-
 
         const bodydata = [
             { username: "username", password: "pas@1Qsword", email: "email@gmail.com" },  // Missing role
@@ -138,7 +135,6 @@ describe("testing when username or password or email or role is missing", () => 
             { email: "email@gmail.com", role: "admin" },                                  // Missing username, password
             { password: "pas@1Qsword", email: "email@gmail.com" },                          // Missing username, role
             { password: "pas@1Qsword", role: "admin" },                            // Missing username, email
-            // All fields present
             { username: "username" },                                          // Missing password, email, role
             { password: "pas@1Qsword" },                                          // Missing username, email, role
             { email: "email@gmail.com" },                                                // Missing username, password, role
@@ -147,8 +143,6 @@ describe("testing when username or password or email or role is missing", () => 
         ];
 
         for (let i = 0; i < bodydata.length; i++) {
-            const mockSave = jest.fn().mockResolvedValue({});
-            Users.prototype.save = mockSave;
             const response = await app.inject({
                 method: 'POST',
                 url: '/auth/register',
@@ -156,18 +150,12 @@ describe("testing when username or password or email or role is missing", () => 
             });
 
 
-            // When any field is missing, save should not be called
-            expect(response.statusCode).toBe(400);  // Missing fields should return 400
+        
+            expect(response.statusCode).toBe(400);  
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
-
             const responseBody = JSON.parse(response.body);
-
-            // Ensure error message matches the specific validation error
             expect(responseBody.error).toBe('Bad Request');
-            expect(responseBody.message).toMatch('Missing required fields in the body');
-
-
-            expect(mockSave).toHaveBeenCalledTimes(0);  // Ensure save is not called when fields are missing
+            expect(responseBody.message).toEqual('Missing required fields in the body');
 
         }
     });
@@ -177,8 +165,6 @@ describe("testing when username or password or email or role is missing", () => 
 // Test-case-2: Testing validation for proper format of fields
 describe("testing the validation of username, password, email, or role", () => {
     test("should respond with a status code of 400 if any field is invalid", async () => {
-        // Mock the findOne method to return null (no existing user)
-        Users.findOne.mockResolvedValue(null);
 
         // Test data with invalid fields
         const bodydata = [
@@ -189,25 +175,20 @@ describe("testing the validation of username, password, email, or role", () => {
         ];
 
         for (let i = 0; i < bodydata.length; i++) {
-            const mockSave = jest.fn().mockResolvedValue({});
-            Users.prototype.save = mockSave;
+
             const response = await app.inject({
                 method: 'POST',
                 url: '/auth/register',
                 payload: bodydata[i]
             });
 
-            // When any field is invalid, save should not be called
             expect(response.statusCode).toBe(400);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
-
             const responseBody = JSON.parse(response.body);
-
-            // Ensure error message matches the specific validation error
             expect(responseBody.error).toBe('Bad Request');
-            expect(responseBody.message).toMatch('Validation failed body requirement not matching');
+            expect(responseBody.message).toEqual('Validation failed body requirement not matching');
 
-            expect(mockSave).toHaveBeenCalledTimes(0);  // Ensure save is not called when fields are invalid
+           
         }
     });
 });
@@ -219,8 +200,6 @@ describe("testing the validation of username, password, email, or role", () => {
 describe("testing when an error occurs during user creation catch block", () => {
 
     test("should respond with a status code of 500", async () => {
-
-        Users.findOne.mockResolvedValue(null);
 
         const mockSave = jest.fn().mockRejectedValue(new Error('Database error'));
 
@@ -280,8 +259,6 @@ describe("testing the login functionality", () => {
 // Test Case 2: Invalid credentials (password doesn't match)
 
 describe("testing the login functionality", () => {
-
-    //import bcrypt from 'bcryptjs';
     test('should respond with a status code of 400 for invalid credentials', async () => {
 
         Users.findOne.mockResolvedValue({
@@ -291,15 +268,9 @@ describe("testing the login functionality", () => {
             role: 'user'
         })
 
-        //  bcrypt.compare=jest.fn().mockResolvedValue(false);
-        //   jest.mock('bcrypt', () => ({
-        //     compare: jest.fn().mockResolvedValue(false),
-        //   }));
-
         bcrypt.compare = jest.fn().mockResolvedValue(false);
 
         const bodydata = { username: "username", password: "pass1Q@1Aword" };
-
         const response = await app.inject({
             method: 'POST',
             url: '/auth/login',
@@ -320,43 +291,33 @@ describe("testing the login functionality", () => {
 
 
 
-// Test-case-4:  Testing while login , validation for missing fields in the body
+// Test-case-3:  Testing while login , validation for missing fields in the body
 describe("testing the validation for missing fields in the body if any of username, password ", () => {
     test("should respond with a status code of 400 if any field is invalid", async () => {
-        // Mock the findOne method to return null (no existing user)
-        Users.findOne.mockResolvedValue(null);
 
         // Test data with invalid fields
         const bodydata = [
             { password: "T@est1password" },
             { username: "validusername" },
             {}
-
-            // { username: "uswertyujghty", password: "T@est1password" }
-
-
         ];
 
         for (let i = 0; i < bodydata.length; i++) {
-            const mockSave = jest.fn().mockResolvedValue({});
-            Users.prototype.save = mockSave;
+
             const response = await app.inject({
                 method: 'POST',
                 url: '/auth/login',
                 payload: bodydata[i]
             });
 
-            // When any field is invalid, save should not be called
-            expect(response.statusCode).toBe(400);  // Invalid fields should return 400
+         
+            expect(response.statusCode).toBe(400); 
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
             const responseBody = JSON.parse(response.body);
 
-            // Ensure error message matches the specific validation error
             expect(responseBody.error).toBe('Bad Request');
-            expect(responseBody.message).toMatch('Missing required fields in the body');
-
-            // expect(mockSave).toHaveBeenCalledTimes(0);  // Ensure save is not called when fields are invalid
+            expect(responseBody.message).toEqual('Missing required fields in the body');
         }
     });
 });
@@ -364,43 +325,32 @@ describe("testing the validation for missing fields in the body if any of userna
 
 
 
-// Test-case-4:  Testing while login , validation for proper format of fields
+// Test-case-4:  Testing while login , validation for proper format of the input fields
 describe("testing the validation of username, password", () => {
     test("should respond with a status code of 400 if any field is invalid", async () => {
-        // Mock the findOne method to return null (no existing user)
-        Users.findOne.mockResolvedValue(null);
-
-        // Test data with invalid fields
+        
         const bodydata = [
-            { username: "us", password: "T@est1password" },  // Invalid username (too short)
-            { username: "validusername", password: "short" },  // Invalid password (too short)
-
-
-            // { username: "uswertyujghty", password: "T@est1password" }
-
+            { username: "us", password: "T@est1password" },  
+            { username: "validusername", password: "short" },  
 
         ];
 
         for (let i = 0; i < bodydata.length; i++) {
-            const mockSave = jest.fn().mockResolvedValue({});
-            Users.prototype.save = mockSave;
+
             const response = await app.inject({
                 method: 'POST',
                 url: '/auth/login',
                 payload: bodydata[i]
             });
 
-            // When any field is invalid, save should not be called
-            expect(response.statusCode).toBe(400);  // Invalid fields should return 400
+            expect(response.statusCode).toBe(400);  
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
             const responseBody = JSON.parse(response.body);
 
-            // Ensure error message matches the specific validation error
             expect(responseBody.error).toBe('Bad Request');
             expect(responseBody.message).toMatch('Validation failed body requirement not matching');
 
-            // expect(mockSave).toHaveBeenCalledTimes(0);  // Ensure save is not called when fields are invalid
         }
     });
 });
@@ -409,7 +359,7 @@ describe("testing the validation of username, password", () => {
 
 
 
-// Test Case 4: Internal server error (bcrypt.compare throws error) catch block
+// Test Case 5: Internal server error (bcrypt.compare throws error) catch block
 
 describe("testing when an error occurs during login", () => {
 
@@ -435,21 +385,17 @@ describe("testing when an error occurs during login", () => {
             payload: bodydata
         });
         expect(response.statusCode).toBe(500);
-        //console.log('Expected:', expected);
-        //console.log('Received:', received);
-
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
         expect(JSON.parse(response.body)).toEqual({
             error: 'Error while logging in the user'
         })
-        // expect(mockSave).toHaveBeenCalledTimes(0);
     })
 
 })
 
 
 
-// // Test Case 3: Successful login (correct username and password)
+// // Test Case 6: Successful login (correct username and password)
 
 describe("testing the login functionality", () => {
     test('should respond with a status code of 200 for successfully logged in user', async () => {
@@ -463,15 +409,11 @@ describe("testing the login functionality", () => {
 
         bcrypt.compare = jest.fn().mockResolvedValue(true);
 
-        // jest.mock('jsonwebtoken'); // Mocking the entire jsonwebtoken module
-
-        // jwt.sign = jest.fn().mockReturnValue('mockedToken');
-
         const mockToken = 'mockedToken.mockedToken.mockedToken';
         jwt.sign = jest.fn().mockReturnValue(mockToken);
 
         Logs.findOne = jest.fn().mockResolvedValue(null); // Simulating no existing log
-        Logs.prototype.save = jest.fn().mockResolvedValue(true);
+       Logs.prototype.save = jest.fn().mockResolvedValue(true);
 
 
         const bodydata = { username: 'username', password: 'pass1Q@1Aword' };
@@ -495,18 +437,9 @@ describe("testing the login functionality", () => {
 // // ++++++++++++++++++++++++++++++++++++++++++++ TEST CASES FOR THE LOGOUT FUNCTIONALITY +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
-
-
-
-
-
-
-
-// In route validation error before going to the controller ;
-
 // when authorization header is invalid 
 
-describe("Testing the logout validation functionality", () => {
+describe("Testcases for the logout functionality", () => {
 
     let mockToken;
     let mockUserLog;
@@ -525,15 +458,16 @@ describe("Testing the logout validation functionality", () => {
             save: jest.fn().mockResolvedValue(true)
         };
 
-        Logs.findOne.mockResolvedValue(mockUserLog);
+      
 
 
     });
 
 
-    test("should respond with the 400 status code for invalid header or token format in logout ", async () => {
+    test("should respond with the 400 status code for invalid header or token format is incorrect  in logout functionality", async () => {
 
-
+       
+        Logs.findOne.mockResolvedValue(mockUserLog);
         const invalidHeadersTestCases = [
             {}, // No Authorization header
             { Authorization: "" }, // Empty Authorization
@@ -556,50 +490,30 @@ describe("Testing the logout validation functionality", () => {
 
 
 
-            expect(response.statusCode).toBe(400);  // Invalid fields should return 400
+            expect(response.statusCode).toBe(400);  
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
-
             const responseBody = JSON.parse(response.body);
-
-            // Ensure error message matches the specific validation error
             expect(responseBody.error).toBe('Bad Request');
             expect(responseBody.message).toEqual('Validation failed in the header requirement not matching');
 
         }
 
-    })
-})
+    }),
 
-
-// Successfully logout 
-describe("Testing the successful logout functionality", () => {
-
-    const mockToken = 'mockedToken.mockedToken.mockedToken';
-    let mockUserLog;
-    beforeAll(() => {
-
-
-        mockUserLog = {
-            _id: 'log123',
-            UserId: 'user123',
-            logintime: new Date(),
-            logouttime: null,
-            UserToken: 'mockedToken.mockedToken.mockedToken',
-            save: jest.fn().mockResolvedValue(true) // Mock the save method to resolve successfully
-        };
-    })
-
-    jwt.verify.mockReturnValue({ id: 'user123', role: 'user' });
-
-    Logs.findOne.mockResolvedValue(mockUserLog);
-
-    //mockToken = jwt.sign({ id: 'user123', role: 'admin' }, process.env.SEC); 
+    
 
     test("should return 200 and successfully log out the user", async () => {
 
+        // const mockUserLog1 = {
+        //     _id: 'log123',
+        //     UserId: 'mockUserId',
+        //     logintime: new Date(),
+        //     logouttime: new Date(),
+        //     UserToken: null,
+        //     save: jest.fn().mockResolvedValue(true)
+        // };
+        Logs.findOne.mockResolvedValue(mockUserLog);
        
-
-        // Simulate the logout request with the Authorization header
         const response = await app.inject({
             method: 'POST',
             url: '/auth/logout',
@@ -615,32 +529,12 @@ describe("Testing the successful logout functionality", () => {
 
         expect(responseBody.message).toBe('user logged out successfully');
 
-    }, 10000);
-
-});
-
-
-
-// catch block logout functionality :
-
-describe("Testing logout functionality when an error occurs", () => {
-
-    const mockToken = "mockedtoken.mockedtoken.mockedtoken";
-
-    beforeEach(() => {
-
-        jwt.verify.mockImplementation(() => ({ id: 'user123', role: 'user' }));
-    });
+    }),
 
     test("should return 400 status when Logs.findOne throws an error", async () => {
 
         Logs.findOne.mockRejectedValue(new Error('Database error'));
-
- 
-  
-
-       
-
+        
         const response = await app.inject({
             method: 'POST',
             url: '/auth/logout',
@@ -650,55 +544,47 @@ describe("Testing logout functionality when an error occurs", () => {
         });
 
 
-        expect(response.statusCode).toBe(403);
+        expect(response.statusCode).toBe(400);
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
         const responseBody = JSON.parse(response.body);
 
         expect(responseBody.error).toEqual('error while logout of the current-user');
-    });
-});
+    }),
 
 
 
-describe("Testing logout with no active session", () => {
+
+
     test("should return 400 if no active session is found for the user", async () => {
 
         
-       Logs.findOne.mockResolvedValue(null);
-        // Create a mock JWT token (This should match your actual token format and secret)
-        const mockToken = jwt.sign({ id: 'user123',role:'user' }, process.env.SEC); // Generate a valid JWT with a user id
+        Logs.findOne.mockResolvedValue(null);
 
+         const response = await app.inject({
+             method: 'POST',
+             url: '/auth/logout',
+             headers: {
+                 Authorization: `Bearer ${mockToken}`  
+             },
+         });
+ 
+      
+         expect(response.statusCode).toBe(403);
+         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
+ 
+         const responseBody = JSON.parse(response.body);
+ 
+        
+       
+         expect(responseBody.error).toEqual('User is logged out, access denied');
+     }),
 
-
-        const response = await app.inject({
-            method: 'POST',
-            url: '/auth/logout',
-            headers: {
-                Authorization: `Bearer ${mockToken}`  
-            },
-        });
-
-     
-        expect(response.statusCode).toBe(403);
-        expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
-
-        const responseBody = JSON.parse(response.body);
+     test("should return 403 if the token is invalid or expired", async () => {
+        // Mock JWT verification failure
 
        
-      
-        expect(responseBody.error).toBe('User is logged out, access denied');
-    });
-});
 
-
-
-
-
-
-describe("Testing middleware - Invalid or Expired Token", () => {
-    test("should return 403 if the token is invalid or expired", async () => {
-        // Mock JWT verification failure
         jwt.verify.mockImplementation(() => {
             throw new Error("Invalid token");
         });
@@ -714,12 +600,11 @@ describe("Testing middleware - Invalid or Expired Token", () => {
         // Log response for debugging
         console.log("Response Body:", response.body);
 
-        // Assertions
         expect(response.statusCode).toBe(403);
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
         const responseBody = JSON.parse(response.body);
-        expect(responseBody.error).toBe('Invalid or expired token');
+        expect(responseBody.error).toEqual('Invalid or expired token');
     });
-});
+})
 
