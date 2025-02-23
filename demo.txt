@@ -1,3 +1,64 @@
+http://localhost:3044/docs/static/index.html
+
+
+ npm install fastify@4 @fastify/swagger@8 @fastify/swagger-ui@2
+
+ npm install fastify@4.29.0
+npm install @fastify/swagger@8.15.0
+npm install @fastify/swagger-ui@2.1.0
+
+in app.js ..> app.listen({ port: PORT }, (err, address) => {})
+
+in eventopera.js 
+
+ return reply.status(200).send({ event: savedEvent });
+
+
+const app = fastify({
+    logger: {
+        level: 'warn' // Logs only warnings and errors, reducing normal request logs
+    }
+});
+.............................>
+
+....> Jest does not support top-level await, so this prevents the error when running test case
+
+app.addHook('onRequest', (request, reply, done) => {
+    if (request.url.startsWith('/docs/static/')) {
+        done(); // Skip logging for Swagger UI static files
+    } else {
+        app.log.info({ req: request }, 'incoming request');
+        done();
+    }
+});
+
+
+/.......................................................................................................>
+
+notes:
+Check if Mongoose .lean() is affecting results If you were using .lean() in your query (Event.find({...}).lean()), that removes Mongoose's document methods and might alter serialization. Since you haven't mentioned using .lean(), this is less likely to be the issue.
+
+
+notes part 2:
+
+It looks like your Event.find({ eventlocation: loc }) query is returning only specific fields instead of the complete document. This could be due to a .select() filter applied somewhere in your model definition, or the way Mongoose is handling projection.
+
+Possible Solutions:
+1. Check Your Schema for Projection Restrictions
+Make sure your Mongoose Event model doesn't have any default select restrictions that might be excluding _id and userId.
+
+2. Explicitly Fetch All Fields
+Modify your query to explicitly include all fields by using .select():
+
+const event1 = await Event.find({ eventlocation: loc }).select('-__v'); // Excludes only the version key
+
+
+...............................>
+// import swaggerjsdoc from 'swagger-jsdoc';
+// import swaggerAutogen from 'swagger-autogen';
+
+
+
 export const eventbook = async (request, reply) => {
 
     const { NoOfSeatsBooking } = request.body;

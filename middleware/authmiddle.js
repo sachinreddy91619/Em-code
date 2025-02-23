@@ -1,3 +1,7 @@
+
+import '../instrument.js';
+
+import * as Sentry from "@sentry/node";
 import fastify from 'fastify';
 import jwt from 'jsonwebtoken';
 
@@ -24,7 +28,7 @@ export default async (request, reply) => {
         const decoded = jwt.verify(token, process.env.SEC);
         const userId = decoded.id;
 
-        console.log("FROM MIDDLWARE HERE ",decoded);
+        console.log("FROM MIDDLWARE HERE ", decoded);
 
         // Check if the user has an active session in the Logs model
         const userLogs = await Logs.findOne({ UserId: userId });
@@ -38,18 +42,19 @@ export default async (request, reply) => {
 
         // Attach the user info to the request object for further use in route handlers
 
-        console.log("HAIHAIHAIHAHAIHAIHAIHAIHAIHAIHAIHAIHAIHAIHAI")
+        // console.log("HAIHAIHAIHAHAIHAIHAIHAIHAIHAIHAIHAIHAIHAIHAI")
         request.user = decoded;
-        
+
 
         // Continue with the request processing
 
-   } 
-    
-    
-    
+    }
+
+
+
     catch (err) {
-       // console.error('Token verification failed:', err);
+        Sentry.captureException(err);
+        // console.error('Token verification failed:', err);
         return reply.status(403).send({ error: 'Invalid or expired token' });
     }
 

@@ -9,16 +9,26 @@ const app = fastify({
 
 import { register, login } from '../controllers/authopera.js';
 import auth from '../middleware/authmiddle.js';
-import registerUserSchema from '../schemas/registerUserSchema.js';
+//import registerUserSchema from '../schemas/registerUserSchema.js';
 import loginUserSchema from '../schemas/loginUserSchema.js';
 
 import { logout } from '../controllers/authopera.js';
 
 import userRegisterValidation from '../validators/registration.js';
 
+import { registerSwagger } from '../docs/SwaggerSchemaAuth.js';
+
 import userLoginvalidation from '../validators/login.js';
 
+import { loginSwagger } from '../docs/SwaggerSchemaAuth.js';
+
+
+
 import userLogoutValidation from '../validators/logout.js';
+
+import { logoutSwagger } from '../docs/SwaggerSchemaAuth.js';
+
+
 
 async function authroutes(fastify, options) {
 
@@ -26,7 +36,8 @@ async function authroutes(fastify, options) {
 
 
     fastify.post('/register', {
-        schema: registerUserSchema, preHandler:
+        schema: registerSwagger.schema,
+        preHandler:
             async (request, reply) => {
 
 
@@ -41,14 +52,16 @@ async function authroutes(fastify, options) {
                 if (validationError) {
                     return reply.status(400).send({
                         error: 'Bad Request',
-                        message: 'Validation failed body requirement not matching'
+                        message: 'Validation failed body requirement not matching@'
                     });
                 }
             }
     }, register); // register route
 
     fastify.post('/login', {
-         preHandler: async (request, reply) => {
+
+        schema: loginSwagger.schema,
+        preHandler: async (request, reply) => {
             const { error: missingFieldsError } = userLoginvalidation.requiredFieldsValidation(request.body);
             if (missingFieldsError) {
                 return reply.status(400).send({
@@ -58,7 +71,7 @@ async function authroutes(fastify, options) {
             }
 
 
-            const { error:validationError} = userLoginvalidation.validate(request.body);
+            const { error: validationError } = userLoginvalidation.validate(request.body);
             if (validationError) {
                 return reply.status(400).send({
                     error: 'Bad Request',
@@ -84,15 +97,19 @@ async function authroutes(fastify, options) {
     // },logout); // logout route
 
     fastify.post('/logout', {
+
+
+        schema: logoutSwagger.schema,
+
         preHandler: async (request, reply) => {
 
-            
-            
 
-          
-console.log(request.headers['authorization'],"this is the request header for me ");
 
-console.log(request.headers)
+
+
+            console.log(request.headers['authorization'], "this is the request header for me ");
+
+            console.log(request.headers)
             const { error } = userLogoutValidation.validate({
                 authorization: request.headers['authorization'], // Accessing the header value
             });

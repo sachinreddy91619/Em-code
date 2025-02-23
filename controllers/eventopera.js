@@ -1,13 +1,16 @@
+
+import '../instrument.js';
+
+import * as Sentry from "@sentry/node";
 import fastify from 'fastify';
 import Event from '../models/Events.js';
 import EventLoc from '../models/EventLoc.js';
 import User from '../models/Users.js';
 import EMB from '../models/EMB.js';
-
-
-const app = fastify({
-    logger: true
-});
+import app from '../app.js';
+// const app = fastify({
+//     logger: true
+// });
 
 
 
@@ -50,10 +53,11 @@ export const createEvent = async (request, reply) => {
         // reply.send(event);
         const savedEvent = await event.save();
         console.log("data saved to the database first time for this entry");
-        return reply.status(200).send(savedEvent);
+        return reply.status(200).send({ event: savedEvent });
 
 
     } catch (err) {
+        Sentry.captureException(err);
         reply.status(400).send({ error: 'Database save failed,Error creating the Event' })
     }
 
@@ -71,9 +75,8 @@ export const getevent = async (request, reply) => {
         if (isAdmin) {
             const event = await Event.find({ userId: request.user.id });
             reply.send(event);
-            console.log(event, "MODI, MODI , MODI")
-            console.log(global.backlistedTokens);
-            console.log(global.backlistedTokens);
+
+
 
         }
         // else {
@@ -102,7 +105,7 @@ export const getevent = async (request, reply) => {
 
         //     reply.send(event1);
         // }
-//[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
+        //[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]
         //     const loc = await EventLoc.find({});
         //     console.log(request.user.id)
         //     console.log(loc)
@@ -122,6 +125,7 @@ export const getevent = async (request, reply) => {
 
 
     } catch (error) {
+        Sentry.captureException(err);
         reply.status(400).send({ error: 'Database failed while getting the events data,Error triggering the catch block' });
     }
 };
@@ -141,6 +145,7 @@ export const getbyid = async (request, reply) => {
         reply.send(event);
 
     } catch (err) {
+        Sentry.captureException(err);
         reply.status(400).send({ error: err.message })
     }
 }
@@ -149,7 +154,7 @@ export const getbyid = async (request, reply) => {
 // This is the route for updating an event
 export const updateevent = async (request, reply) => {
 
-    console.log("hai iam SACHIN HERE ! WHAT ABOUT YOU")
+
     const { eventname, eventdate, eventlocation, amountrange, eventtime } = request.body;
 
 
@@ -166,7 +171,7 @@ export const updateevent = async (request, reply) => {
 
     try {
         const event = await Event.findById(request.params.id);
-        console.log(event, "qodic qodic ")
+        console.log(event, "result come ")
 
         if (!event || event.userId.toString() !== request.user.id) {
             return reply.status(400).send({ error: 'event not found' })
@@ -198,6 +203,7 @@ export const updateevent = async (request, reply) => {
         reply.status(200).send(updatedEvent);
 
     } catch (err) {
+        Sentry.captureException(err);
         reply.status(400).send({ error: err.message });
 
     }
@@ -238,6 +244,7 @@ export const deleteevent = async (request, reply) => {
 
 
     } catch (err) {
+        Sentry.captureException(err);
         reply.status(400).send({ error: err.message });
 
     }
@@ -275,13 +282,14 @@ export const loc = async (request, reply) => {
         reply.status(200).send({ message: "location saved for this user" });
 
     } catch (err) {
+        Sentry.captureException(err);
         reply.status(400).send({ message: "getting the error while giving the event location" })
     }
 }
 
 
-export const locationevent=async(request,reply)=>{
-    try{
+export const locationevent = async (request, reply) => {
+    try {
 
 
         const userlocation = await EventLoc.findOne({
@@ -291,7 +299,7 @@ export const locationevent=async(request,reply)=>{
             .limit(1);
 
 
-        console.log(userlocation, "sachin sachin sachin sachin sachin")
+        console.log(userlocation)
 
         if (!userlocation) {
             return reply.status(404).send({ message: "Please provide your location first." })
@@ -306,12 +314,14 @@ export const locationevent=async(request,reply)=>{
             return reply.status(404).send({ message: "No events found for this location" });
         }
 
+        console.log(event1)
         reply.send(event1);
-    
+
 
     }
-    catch(err){
-        reply.status(400).send({error:err.message})
+    catch (err) {
+        Sentry.captureException(err);
+        reply.status(400).send({ error: err.message })
     }
 }
 
@@ -356,7 +366,7 @@ export const eventbook = async (request, reply) => {
         const user = await User.findById(e);
         console.log(user)
         const eventid = event._id;
-        console.log(eventid, "this is good to see this is good to see")
+        console.log(eventid)
 
         const eventname = event.eventname;
         const eventdate = event.eventdate;
@@ -409,6 +419,7 @@ export const eventbook = async (request, reply) => {
         await event1.save();
 
     } catch (err) {
+        Sentry.captureException(err);
         reply.status(400).send({ error: err.message })
     }
 
@@ -426,6 +437,7 @@ export const getallbookings = async (request, reply) => {
 
     }
     catch (err) {
+        Sentry.captureException(err);
         reply.status(400).send({ error: err.message });
 
     }
@@ -438,9 +450,9 @@ export const booking = async (request, reply) => {
     const { NoOfSeatsBooking } = request.body;
 
     try {
-        console.log(request.user.id, "rgvrgvrgv")
+        console.log(request.user.id, "fecthing the user id")
         const book = await EMB.findByIdAndUpdate(request.params.id);
-        console.log(book, "ahhhahhhh")
+        console.log(book, "this is booking data")
 
         if (!book || book.userId.toString() !== request.user.id) {
             return reply.status(400).send({ error: 'event not found here' })
@@ -458,7 +470,7 @@ export const booking = async (request, reply) => {
         //     book.NoOfSeatsBooking = NoOfSeatsBooking;
         // }
         if (book.NoOfSeatsBooking === NoOfSeatsBooking) {
-            return reply.status(200).send({ message: "you are given same number of seats,so no changes in your booking" })
+            return reply.status(208).send({ message: "you are given same number of seats,so no changes in your booking" })
 
         }
 
@@ -514,6 +526,7 @@ export const booking = async (request, reply) => {
 
     }
     catch (err) {
+        Sentry.captureException(err);
 
         reply.status(400).send({ error: err.message });
 
@@ -570,8 +583,7 @@ export const eventdelete = async (request, reply) => {
     }
 
     catch (err) {
+        Sentry.captureException(err);
         reply.status(400).send({ error: err.message });
     }
 }
-
-

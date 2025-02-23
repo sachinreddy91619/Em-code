@@ -3,7 +3,7 @@ import fastify from 'fastify';
 const app = fastify({
   logger: true
 });
-import { createEvent, getevent, getbyid, deleteevent, updateevent, loc,locationevent, eventbook, getallbookings, booking, eventdelete } from '../controllers/eventopera.js';
+import { createEvent, getevent, getbyid, deleteevent, updateevent, loc, locationevent, eventbook, getallbookings, booking, eventdelete } from '../controllers/eventopera.js';
 import createEventSchema from '../schemas/createEventSchema.js';
 import updateEventSchema from '../schemas/createEventSchema.js';
 import getbyidEventSchema from '../schemas/getbyidEventSchema.js';
@@ -21,23 +21,43 @@ import Allparams from '../validators/Allparams.js';
 
 
 import EMcreateEventValidation from '../validators/EMcreateEvent.js';
+import { CreateESwagger } from '../docs/swaggerSchemaEventadmin.js';
+
 import EMgetEventsValidation from '../validators/EMgetEvents.js';
+import { GetESwagger } from '../docs/swaggerSchemaEventadmin.js';
+
 import EMgetbyidEventsValidation from '../validators/EMgetbyidEvent.js';
+import { GetByIdESwagger } from '../docs/swaggerSchemaEventadmin.js';
 
 import { EMupdateValidation } from '../validators/EMupdateValidation.js';
+import { UpdateByIdESwagger } from '../docs/swaggerSchemaEventadmin.js';
 
 import { EMzDeleteValidation } from '../validators/EMzdeleteEvent.js';
+import { DeleteByIdESwagger } from '../docs/swaggerSchemaEventadmin.js';
 
+// =======================================================================================  >
 
-import { UlocValidation } from '../validators/Uloc.js'
-
+import { UlocValidation } from '../validators/Uloc.js';
 import { UeventbookValidation } from '../validators/Ueventbook.js';
-
 import UgetAll from '../validators/Ugetall.js';
-
 import { UeventbookEditValidation } from '../validators/Uupdate.js';
-
 import { UeventbookDeleteValidation } from '../validators/Udelete.js';
+
+
+import { LocationUSwagger } from '../docs/swaggerSchemaBookuser.js';
+import { EventsForLocationUSwagger } from '../docs/swaggerSchemaBookuser.js';
+
+import {BookingUSwagger}  from '../docs/swaggerSchemaBookuser.js';
+
+import { EventitUSwagger } from '../docs/swaggerSchemaBookuser.js';
+
+import { GetAllUSwagger } from '../docs/swaggerSchemaBookuser.js';
+
+
+import { DeleteUSwagger } from '../docs/swaggerSchemaBookuser.js';
+
+
+
 
 
 
@@ -51,11 +71,13 @@ async function eventRoutes(fastify, options) {
   // fastify.post('/create', { schema: createEventSchema, preHandler: [auth, roleauth(['admin'])] }, createEvent);
 
   fastify.post('/create', {
-    
-     preHandler: async (request, reply) => {
 
-    
-    
+    schema: CreateESwagger.schema,
+
+    preHandler: async (request, reply) => {
+
+
+
 
       const { error: headerError } = AllHeader.validate({
         authorization: request.headers['authorization'], // Accessing the header value
@@ -67,22 +89,22 @@ async function eventRoutes(fastify, options) {
         });
       }
 
-     
 
-      const {error:missingFieldsError}=EMcreateEventValidation.requiredFieldsValidation(request.body);
-      console.log(request.body,"Iam doig good")
+
+      const { error: missingFieldsError } = EMcreateEventValidation.requiredFieldsValidation(request.body);
+      console.log(request.body, "Iam doig good")
 
       if (missingFieldsError) {
-        console.log(request.body,"Iam doig bad")
+        console.log(request.body, "Iam doig bad")
 
         console.log("iam sachin ")
-          return reply.status(400).send({
-              error: 'Bad Request',
-              message: 'Missing required fields in the body when creating an event',
-          });
+        return reply.status(400).send({
+          error: 'Bad Request',
+          message: 'Missing required fields in the body when creating an event',
+        });
       }
-      
-      const { error :validateError} = EMcreateEventValidation.validate(request.body);
+
+      const { error: validateError } = EMcreateEventValidation.validate(request.body);
 
       if (validateError) {
         return reply.status(400).send({
@@ -98,7 +120,7 @@ async function eventRoutes(fastify, options) {
 
 
       //roleauth(['admin']
-     
+
 
     }
 
@@ -125,10 +147,12 @@ async function eventRoutes(fastify, options) {
   //fastify.get('/get', { preHandler: auth }, getevent);
 
   fastify.get('/get', {
+
+    schema: GetESwagger.schema,
     preHandler: async (request, reply) => {
 
 
-      
+
 
       const { error } = EMgetEventsValidation.validate({
         authorization: request.headers['authorization'], // Accessing the header value
@@ -151,9 +175,10 @@ async function eventRoutes(fastify, options) {
 
   // This route is to get a particular event based on Id
   fastify.get('/get/:id', {
-    schema: getbyidEventSchema, preHandler: async (request, reply) => {
 
-      const {error:paramsError}=Allparams.validate(request.params);
+    schema: GetByIdESwagger.schema, preHandler: async (request, reply) => {
+
+      const { error: paramsError } = Allparams.validate(request.params);
 
       const { error } = EMgetbyidEventsValidation.validate({
         authorization: request.headers['authorization'], // Accessing the header value
@@ -166,12 +191,12 @@ async function eventRoutes(fastify, options) {
         })
       }
 
-      if(paramsError){
+      if (paramsError) {
 
         return reply.status(500).send({
           error: 'Bad Request',
           message: 'params.id should match pattern \"^[0-9a-fA-F]{24}$\"'
-        })        
+        })
       }
 
       await auth(request, reply)
@@ -201,6 +226,7 @@ async function eventRoutes(fastify, options) {
 
   //This route is to update the event 
   fastify.put('/update/:id', {
+    schema: UpdateByIdESwagger.schema,
     preHandler: async (request, reply) => {
 
 
@@ -275,6 +301,8 @@ async function eventRoutes(fastify, options) {
   // This route is to delete the event
 
   fastify.delete('/delete/:id', {
+
+    schema: DeleteByIdESwagger.schema,
     preHandler:
 
       async (request, reply) => {
@@ -324,11 +352,13 @@ async function eventRoutes(fastify, options) {
 
   // this is the provide the location
   fastify.post('/location', {
+
+    schema: LocationUSwagger.schema,
     preHandler:
 
 
       async (request, reply) => {
-       
+
         console.log("user authenticated for giveing the location and GOing to NEXT ")
 
         const { error: authError } = UlocValidation.authorizationValidation.validate({
@@ -358,31 +388,36 @@ async function eventRoutes(fastify, options) {
   }, loc);
 
 
-fastify.get('/eventsforlocation',{
+  fastify.get('/eventsforlocation', {
 
-  preHandler: async (request, reply) => {
+    schema: EventsForLocationUSwagger.schema,
+
+    preHandler: async (request, reply) => {
 
 
-    const { error } = EMgetEventsValidation.validate({
-      authorization: request.headers['authorization'], // Accessing the header value
-    });
-
-    if (error) {
-      return reply.status(400).send({
-        error: 'Bad Request',
-        message: 'The authorization header is required, to get the events of the for the particular location',
-        //message:error.details[0].message,
+      const { error } = EMgetEventsValidation.validate({
+        authorization: request.headers['authorization'], // Accessing the header value
       });
+
+      if (error) {
+        return reply.status(400).send({
+          error: 'Bad Request',
+          message: 'The authorization header is required, to get the events of the for the particular location',
+          //message:error.details[0].message,
+        });
+      }
+
+      await auth(request, reply);
     }
 
-    await auth(request, reply);
-  }
-
-},locationevent)
+  }, locationevent)
 
 
   // this route is book the event
   fastify.post('/eventit/:id', {
+
+    schema: EventitUSwagger.schema,
+
     preHandler:
       async (request, reply) => {
 
@@ -440,6 +475,8 @@ fastify.get('/eventsforlocation',{
 
   // this is is to get all  the bookings of the user 
   fastify.get('/all', {
+
+    schema: GetAllUSwagger.schema,
     preHandler: async (request, reply) => {
 
       const { error } = UgetAll.validate({
@@ -476,6 +513,8 @@ fastify.get('/eventsforlocation',{
 
   // this route is to update the update a booking 
   fastify.put('/bookings/:id', {
+
+    schema: BookingUSwagger.schema,
     preHandler:
 
 
@@ -532,6 +571,9 @@ fastify.get('/eventsforlocation',{
 
 
   fastify.delete('/cc/:id', {
+
+
+    schema: DeleteUSwagger.schema,
     preHandler:
 
       async (request, reply) => {

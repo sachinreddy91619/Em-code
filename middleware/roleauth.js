@@ -1,23 +1,25 @@
+import '../instrument.js';
 
+import * as Sentry from "@sentry/node";
 
 import fastify from 'fastify';
 import jwt from 'jsonwebtoken';
 
-const app=fastify({
-    logger:true
+const app = fastify({
+    logger: true
 })
 
 
 
-export default (requiredRoles)=>{
-    return (request,reply)=>{
+export default (requiredRoles) => {
+    return (request, reply) => {
 
-        if(!requiredRoles.includes(request.user.role)){
-            return reply.status(401).send({error:'User role not having the permissions to do'});
+        if (!requiredRoles.includes(request.user.role)) {
+            return reply.status(401).send({ error: 'User role not having the permissions to do' });
+        }
+
+
     }
-
-
-}
 }
 
 //================================================

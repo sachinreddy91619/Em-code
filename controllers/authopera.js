@@ -1,3 +1,8 @@
+import '../instrument.js';
+
+import * as Sentry from "@sentry/node";
+
+import app from '../app.js';
 import fastify from 'fastify';
 import bcrypt from 'bcrypt';
 import User from '../models/Users.js';
@@ -5,12 +10,15 @@ import Logs from '../models/Logs.js';
 import jwt from 'jsonwebtoken';
 import joi from 'joi';
 
-//import { backlisted } from '../middleware/authmiddle.js';
 
-const eee = fastify({
-    logger: true
-})
-import app from '../app.js';
+
+
+// const app = fastify({
+//     logger: true
+// })
+
+//Sentry.setupFastifyErrorHandler(app);
+
 
 console.log("Starting authopera.js...");
 
@@ -21,18 +29,6 @@ export const register = async (request, reply) => {
     const { username, password, email, role } = request.body;
 
 
-    console.log("Registering user:", { username, email, role });  // Debugging the incoming request
-    // Validate that all required fields are present
-    const requiredFields = ['username', 'password', 'email', 'role'];
-    const missingFields = requiredFields.filter(field => !request.body[field]);
-    // Done
-    if (missingFields.length > 0) {
-        console.log("Missing required fields:", missingFields);  // Debugging missing fields
-        return reply.status(400).send({
-            error: 'Bad Request',
-            message: 'Missing required fields in the body',
-        });
-    }
 
     try {
 
@@ -40,6 +36,7 @@ export const register = async (request, reply) => {
         console.log("Checking for existing user:", username, "Found:", existingUser);
         //DONE
         if (existingUser) {
+
             return reply.status(400).send({ error: 'Username already exists. Try with another username' });
         }
 
@@ -54,8 +51,11 @@ export const register = async (request, reply) => {
     }
     catch (err) {
         //  console.error('Error creating the user',err);
-      //  console.error("Error during user registration:", err);
+        //  console.error("Error during user registration:", err);
+        Sentry.captureException(err);
+
         return reply.status(500).send({ error: 'error creating the user' });
+
     }
 }
 
@@ -65,20 +65,6 @@ export const login = async (request, reply) => {
 
     const { username, password } = request.body;
     // console.log("Login attempt:", { username });  // Debugging login request
-
-
-    //const requiredFields = ['username', 'password'];
-    // const missingFields = requiredFields.filter(field => !request.body[field]);
-    // // Done
-    // if (missingFields.length > 0) {
-    //     console.log("Missing required fields:", missingFields);  // Debugging missing fields
-    //     return reply.status(400).send({
-    //         error: 'Bad Request',
-    //         message: 'Missing required fields in the body',
-    //     });
-    // }
-
-
 
 
     try {
@@ -99,7 +85,7 @@ export const login = async (request, reply) => {
         //  reply.status(200).send({token});
         console.log(token);
         const data = await User.findOne({ username });
-        console.log(data, "hey iam doing good hey iam doing good here ")
+        //console.log(data, "hey iam doing good hey iam doing good here ")
         // Userid=data._id;
 
         const existingLog = await Logs.findOne({ UserId: user._id })
@@ -118,7 +104,7 @@ export const login = async (request, reply) => {
 
             await existingLog.save();
             console.log("Existing log updated:", existingLog);
-            console.log("Existing log updated:", existingLog);
+            // console.log("Existing log updated:", existingLog);
         }
         else {
             console.log("No existing log found, creating new log.");
@@ -142,51 +128,19 @@ export const login = async (request, reply) => {
 
 
         console.log("Sending login response with token:", token);
-// DONE
+        // DONE
         reply.status(200).send({ token });
 
     }
     catch (err) {
         // Log the actual error message for debugging
-       
-        reply.status(500).send({ error: 'Error while logging in the user'});
+
+        Sentry.captureException(err);
+
+        reply.status(500).send({ error: 'Error while logging in the user' });
     }
 
 };
-
-
-
-
-
-
-// export const logout= async (request,reply)=>{
-//     try{
-
-//         const authHeader=request.headers['authorization'];
-//         const token=authHeader && authHeader.split(' ')[1];
-
-//         if(!token) 
-//             {
-// return reply.status(401).send({error:'token required for the logging out functionality'})
-//             }
-
-//             if(!global.backlistedTokens){
-//                 global.backlistedTokens=[];
-
-//             }
-//             global.backlistedTokens.push(token);
-//             console.log('Token blacklisted:', token);
-//             console.log('Blacklisted tokens:', global.backlistedTokens);
-//             //console.log(global.backlistedTokens); 
-//             reply.send({message:'user logged out successfully'})
-//     }
-//     catch(err){
-//         console.error('Error durign the logout',err);
-//         reply.status(500).send({error:'error while logout in the current-user'});
-//     }
-
-// };
-
 
 
 
@@ -202,7 +156,7 @@ export const logout = async (request, reply) => {
         console.log("Logout attempt, received token:", authHeader);
         const token = authHeader && authHeader.split(' ')[1];
 
-        if (!token) {                        
+        if (!token) {
             return reply.status(401).send({ error: 'token required for the logging' })
         };
 
@@ -231,6 +185,8 @@ export const logout = async (request, reply) => {
 
     catch (err) {
         //console.log('Error durign the logout', err);
+
+        Sentry.captureException(err);
         reply.status(400).send({ error: 'error while logout of the current-user' });
     }
 
