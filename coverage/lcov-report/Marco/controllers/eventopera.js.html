@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.62% </span>
+                <span class="strong">61.02% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>124/198</span>
+                <span class='fraction'>119/195</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.66% </span>
+                <span class="strong">60.34% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>37/60</span>
+                <span class='fraction'>35/58</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">61.65% </span>
+                <span class="strong">60% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>119/193</span>
+                <span class='fraction'>114/190</span>
             </div>
         
             
@@ -918,25 +918,25 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -1268,7 +1268,7 @@ export const createEvent = async (request, reply) =&gt; {
     const currentDate = new Date();
 &nbsp;
     if (eventDate &lt;= currentDate) {
-        return reply.status(400).send({
+        return reply.status(405).send({
             error: 'Bad Request',
             message: 'Event date must be in the future.',
         });
@@ -1299,8 +1299,8 @@ export const createEvent = async (request, reply) =&gt; {
 &nbsp;
     } catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: 'Database save failed,Error creating the Event' })
-    }
+        reply.status(500).send({ error: 'Database save failed,Error creating the Event' })
+    } 
 &nbsp;
 };
 &nbsp;
@@ -1367,7 +1367,7 @@ export const getevent = async (request, reply) =&gt; {
 &nbsp;
     } catch (error) {
         Sentry.captureException(err);
-<span class="cstat-no" title="statement not covered" >        reply.status(400).send({ error: 'Database failed while getting the events data,Error triggering the catch block' });</span>
+<span class="cstat-no" title="statement not covered" >        reply.status(500).send({ error: 'Database failed while getting the events data,Error triggering the catch block' });</span>
     }
 };
 &nbsp;
@@ -1387,7 +1387,7 @@ export const getbyid = async (request, reply) =&gt; {
 &nbsp;
     } catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: err.message })
+        reply.status(500).send({ error:'Internal Server Error while while executing the getbyId' })
     }
 }
 &nbsp;
@@ -1403,7 +1403,7 @@ export const updateevent = async (request, reply) =&gt; {
     const currentDate = new Date();
 &nbsp;
     if (eventDate &lt;= currentDate) {
-        return reply.status(400).send({
+        return reply.status(405).send({
             error: 'Bad Request',
             message: 'Event date must be in the future.',
         });
@@ -1415,7 +1415,7 @@ export const updateevent = async (request, reply) =&gt; {
         console.log(event, "result come ")
 &nbsp;
         if (!event || event.userId.toString() !== request.user.id) {
-            return reply.status(400).send({ error: 'event not found' })
+            return reply.status(404).send({ error: 'event not found' })
         }
 &nbsp;
 &nbsp;
@@ -1445,7 +1445,7 @@ export const updateevent = async (request, reply) =&gt; {
 &nbsp;
     } catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: err.message });
+        reply.status(500).send({ error: "Internal Server Error while updating the event" });
 &nbsp;
     }
 };
@@ -1475,7 +1475,7 @@ export const deleteevent = async (request, reply) =&gt; {
 &nbsp;
         const event = await Event.findByIdAndDelete(request.params.id);
         if (!event || event.userId.toString() !== request.user.id) {
-            return reply.status(400).send({ error: 'event not found' })
+            return reply.status(404).send({ error: 'event not found' })
         }
 &nbsp;
 &nbsp;
@@ -1486,7 +1486,7 @@ export const deleteevent = async (request, reply) =&gt; {
 &nbsp;
     } catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: err.message });
+        reply.status(500).send({ error: 'Internal Server Error while deleting the event' });
 &nbsp;
     }
 };
@@ -1506,14 +1506,14 @@ export const loc = async (request, reply) =&gt; {
     const { eventneedlocation } = request.body;
     try {
 &nbsp;
-        const existinglocation = await EventLoc.findOne({
-            userId: request.user.id
-        })
+        // const existinglocation = await EventLoc.findOne({
+        //     userId: request.user.id
+        // })
 &nbsp;
-        if (existinglocation) {
-            return reply.status(400).send({ message: "location already exist" })
+        // if (existinglocation) {
+        //     return reply.status(400).send({ message: "location already exist" })
 &nbsp;
-        }
+        // }
         const event = new EventLoc({
             eventneedlocation,
             userId: request.user.id
@@ -1523,8 +1523,8 @@ export const loc = async (request, reply) =&gt; {
         reply.status(200).send({ message: "location saved for this user" });
 &nbsp;
     } catch (err) {
-        Sentry.captureException(err);
-        reply.status(400).send({ message: "getting the error while giving the event location" })
+<span class="cstat-no" title="statement not covered" >        Sentry.captureException(err);</span>
+<span class="cstat-no" title="statement not covered" >        reply.status(400).send({ message: "getting the error while giving the event location" })</span>
     }
 }
 &nbsp;
@@ -1834,7 +1834,7 @@ export const eventdelete = async (request, reply) =&gt; {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-23T19:28:49.091Z
+                at 2025-02-24T18:18:05.881Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

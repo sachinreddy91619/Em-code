@@ -5,7 +5,7 @@ export const registerSwagger = {
         
     
                 tags: ["FOR REGISTRATION/LOGIN/LOGOUT"],
-                //security: [{ BearerAuth: [] }], // Only this route has authentication
+            
                 body: {
                     type: "object",
                     properties: {
@@ -33,7 +33,7 @@ export const registerSwagger = {
                             description: "Role of the user",
                         },
                     },
-                    //required: ["username", "email", "password", "role"], // Required fields
+                
                 },
                 response: {
                     201: {

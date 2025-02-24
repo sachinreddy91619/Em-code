@@ -181,7 +181,8 @@ export const GetESwagger = {
                         totalseats: { type: "integer", example: 200 },
                         availableseats: { type: "integer", example: 180 },
                         bookedseats: { type: "integer", example: 20 },
-                        userId: { type: "string", example: "60f7b2c8e9f3c20017045a2d" }
+                        userId: { type: "string", example: "60f7b2c8e9f3c20017045a2d" },
+                        __v: { type: "number", example: 0 }
                     }
                 }
             },
