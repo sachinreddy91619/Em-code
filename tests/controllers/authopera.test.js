@@ -60,7 +60,7 @@ describe("testing the registration of user", () => {
             payload: { username: 'testname', password: 'T@est1password', email: 'testemail@gmail.com', role: 'admin' }
         });
 
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(403);
         expect(JSON.parse(response.body)).toEqual({ error: 'Username already exists. Try with another username' });
 
     });
@@ -164,7 +164,7 @@ describe("testing when username or password or email or role is missing", () => 
 
 // Test-case-2: Testing validation for proper format of fields
 describe("testing the validation of username, password, email, or role", () => {
-    test("should respond with a status code of 400 if any field is invalid", async () => {
+    test("should respond with a status code of 401 if any field is invalid", async () => {
 
         // Test data with invalid fields
         const bodydata = [
@@ -182,11 +182,11 @@ describe("testing the validation of username, password, email, or role", () => {
                 payload: bodydata[i]
             });
 
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(401);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
             const responseBody = JSON.parse(response.body);
             expect(responseBody.error).toBe('Bad Request');
-            expect(responseBody.message).toEqual('Validation failed body requirement not matching');
+            expect(responseBody.message).toEqual('Validation failed body requirement not matching has per the requirements');
 
            
         }
@@ -247,7 +247,7 @@ describe("testing the login functionality", () => {
             payload: { username: "username", password: "pass1Q@1Aword" }
         });
 
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(404);
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
         expect(JSON.parse(response.body)).toEqual({
             error: "user not found"
@@ -259,7 +259,7 @@ describe("testing the login functionality", () => {
 // Test Case 2: Invalid credentials (password doesn't match)
 
 describe("testing the login functionality", () => {
-    test('should respond with a status code of 400 for invalid credentials', async () => {
+    test('should respond with a status code of 403 for invalid credentials', async () => {
 
         Users.findOne.mockResolvedValue({
             _id: '1',
@@ -277,7 +277,7 @@ describe("testing the login functionality", () => {
             payload: bodydata
         })
 
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(403);
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
         expect(JSON.parse(response.body)).toEqual({
             error: 'invalid credentials'
@@ -343,13 +343,13 @@ describe("testing the validation of username, password", () => {
                 payload: bodydata[i]
             });
 
-            expect(response.statusCode).toBe(400);  
+            expect(response.statusCode).toBe(401);  
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
             const responseBody = JSON.parse(response.body);
 
             expect(responseBody.error).toBe('Bad Request');
-            expect(responseBody.message).toMatch('Validation failed body requirement not matching');
+            expect(responseBody.message).toEqual('Validation failed body requirement not matching');
 
         }
     });
@@ -495,7 +495,7 @@ describe("Testcases for the logout functionality", () => {
             const responseBody = JSON.parse(response.body);
             expect(responseBody.error).toBe('Bad Request');
             expect(responseBody.message).toEqual('Validation failed in the header requirement not matching');
-
+                                                
         }
 
     }),
@@ -531,9 +531,9 @@ describe("Testcases for the logout functionality", () => {
 
     }),
 
-    test("should return 400 status when Logs.findOne throws an error", async () => {
+    test("should return 500 status when Logs.findOne throws an error", async () => {
 
-        Logs.findOne.mockRejectedValue(new Error('Database error'));
+        Logs.findOne.mockRejectedValue(new Error('error while logout of the current-user'));
         
         const response = await app.inject({
             method: 'POST',
@@ -544,7 +544,7 @@ describe("Testcases for the logout functionality", () => {
         });
 
 
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(500);
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
         const responseBody = JSON.parse(response.body);

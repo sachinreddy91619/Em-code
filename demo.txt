@@ -1,14 +1,38 @@
+
+
+To get the code from the remote repo and under new Folder name  directly : 
+
+git init # Initializes the git repository inside the EVENT-MANAGEMENT-API folder
+git remote add origin https://github.com/sachinreddy91619/FINALY-PROJECT.git # Add the remo
+git fetch origin
+git pull origin master
+
+
+
+
+To remove the nistalled node_modules: in power shell if the installation not hapedn properly :
+Remove-Item -Recurse -Force .\node_modules
+rm -rf node_modules
+
+
+Remove-Item -Force .\package-lock.json
+rm package-lock.json
+
+
+.............................................................................>
+
 http://localhost:3044/docs/static/index.html
 
 
  npm install fastify@4 @fastify/swagger@8 @fastify/swagger-ui@2
-
+.......................................................................... >
  npm install fastify@4.29.0
 npm install @fastify/swagger@8.15.0
 npm install @fastify/swagger-ui@2.1.0
+.............................................................................> 
 
 in app.js ..> app.listen({ port: PORT }, (err, address) => {})
-
+.............................................................................>
 in eventopera.js 
 
  return reply.status(200).send({ event: savedEvent });
@@ -19,7 +43,7 @@ const app = fastify({
         level: 'warn' // Logs only warnings and errors, reducing normal request logs
     }
 });
-.............................>
+.............................................................................>
 
 ....> Jest does not support top-level await, so this prevents the error when running test case
 
@@ -31,6 +55,21 @@ app.addHook('onRequest', (request, reply, done) => {
         done();
     }
 });
+
+
+/.......................................................................................................>
+
+
+
+
+
+error :
+hooks:204:9)\n    at AsyncResource.runMicrotask (node:internal/process/task_queues:137:8)","code":"FST_ERR_SCH_SERIALIZATION_BUILD","name":"FastifyError","statusCode":500},
+"msg":"Failed building the serialization schema for POST: /auth/register, due to error schema is invalid: data/properties must be object"}
+
+/.......................................................................................................>
+schemas and properties support single example but not multiple examples .
+
 
 
 /.......................................................................................................>

@@ -1,27 +1,10 @@
-// import FastifySwagger from '@fastify/swagger';
-// import FastifySwaggerUI from '@fastify/swagger-ui';
 
-
-
-// // Step 1: Generate swagger_output.json using swagger-autogen
-// const doc = {
-//     info: {
-//         title: 'Fastify API',
-//         description: 'Generating API documentation using swagger-autogen',
-//         version: '1.0.0',
-//     },
-//     host: 'localhost:3044',
-//     basePath: '/',
-//     schemes: ['http'],
-// };
-
-// const outputFile = './swagger_output.json';
-// const endpointsFiles = ['./routes/authroutes.js', './routes/eventroutes.js']; // Add all your route files
 
 import FastifySwagger from '@fastify/swagger';
 import FastifySwaggerUI from '@fastify/swagger-ui';
 
 export default async function setupSwagger(app) {
+    
     await app.register(FastifySwagger, {
         swagger: {
             info: {
@@ -36,6 +19,7 @@ export default async function setupSwagger(app) {
             servers: [
                 {
                     url: 'http://localhost:3044',
+                    //url:'https://192.168.31.120:3044',
                     description: 'Local Server'
                 }
             ],

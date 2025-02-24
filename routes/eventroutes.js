@@ -98,7 +98,7 @@ async function eventRoutes(fastify, options) {
         console.log(request.body, "Iam doig bad")
 
         console.log("iam sachin ")
-        return reply.status(400).send({
+        return reply.status(403).send({
           error: 'Bad Request',
           message: 'Missing required fields in the body when creating an event',
         });
@@ -107,7 +107,7 @@ async function eventRoutes(fastify, options) {
       const { error: validateError } = EMcreateEventValidation.validate(request.body);
 
       if (validateError) {
-        return reply.status(400).send({
+        return reply.status(404).send({
           error: 'Bad Request',
           message: 'Validation failed body requirement not matching when creating an event',
         });
@@ -193,7 +193,7 @@ async function eventRoutes(fastify, options) {
 
       if (paramsError) {
 
-        return reply.status(500).send({
+        return reply.status(401).send({
           error: 'Bad Request',
           message: 'params.id should match pattern \"^[0-9a-fA-F]{24}$\"'
         })
@@ -256,7 +256,7 @@ async function eventRoutes(fastify, options) {
 
       if (paramsIdError) {
 
-        return reply.status(400).send({
+        return reply.status(403).send({
           error: 'Bad Request',
           message: 'The id is required, to update the events of the particular event manager'
         })
@@ -328,7 +328,7 @@ async function eventRoutes(fastify, options) {
 
         if (paramsIdError) {
 
-          return reply.status(400).send({
+          return reply.status(405).send({
             error: 'Bad Request',
             message: 'The id is required, to delete the events of the particular event manager'
           })

@@ -50,9 +50,9 @@ async function authroutes(fastify, options) {
                 }
                 const { error: validationError } = userRegisterValidation.validate(request.body);
                 if (validationError) {
-                    return reply.status(400).send({
+                    return reply.status(401).send({
                         error: 'Bad Request',
-                        message: 'Validation failed body requirement not matching@'
+                        message: 'Validation failed body requirement not matching has per the requirements'
                     });
                 }
             }
@@ -73,7 +73,7 @@ async function authroutes(fastify, options) {
 
             const { error: validationError } = userLoginvalidation.validate(request.body);
             if (validationError) {
-                return reply.status(400).send({
+                return reply.status(401).send({
                     error: 'Bad Request',
                     message: 'Validation failed body requirement not matching',
                 })

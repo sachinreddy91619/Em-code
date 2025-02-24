@@ -37,7 +37,7 @@ export const register = async (request, reply) => {
         //DONE
         if (existingUser) {
 
-            return reply.status(400).send({ error: 'Username already exists. Try with another username' });
+            return reply.status(403).send({ error: 'Username already exists. Try with another username' });
         }
 
         const user = new User({ username, email, password, role });
@@ -72,12 +72,12 @@ export const login = async (request, reply) => {
         console.log("User found for login:", user ? user._id : "No user found");
         //DONE
         if (!user) {
-            return reply.status(400).send({ error: 'user not found' });
+            return reply.status(404).send({ error: 'user not found' });
         }
 
         const ismatch = await bcrypt.compare(password, user.password);
         //DONE
-        if (!ismatch) return reply.status(400).send({ error: 'invalid credentials' });
+        if (!ismatch) return reply.status(403).send({ error: 'invalid credentials' });
 
         const payload = { id: user._id, role: user.role };
         const token = jwt.sign(payload, process.env.SEC);
@@ -170,7 +170,7 @@ export const logout = async (request, reply) => {
         console.log("User logs for logout:", userlogs);
 
         if (!userlogs) {
-            return reply.status(400).send({ message: 'No active session found for this token' });
+            return reply.status(403).send({ message: 'No active session found for this token' });
         }
 
 
@@ -187,7 +187,7 @@ export const logout = async (request, reply) => {
         //console.log('Error durign the logout', err);
 
         Sentry.captureException(err);
-        reply.status(400).send({ error: 'error while logout of the current-user' });
+        reply.status(500).send({ error: 'error while logout of the current-user' });
     }
 
 }

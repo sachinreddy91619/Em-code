@@ -76,7 +76,7 @@ export const CreateESwagger = {
                 description: "Event created successfully",
                 type: "object",
                 properties: {
-                    //message: { type: "string", example: "Event created successfully" },
+                   
                     event: {
                         type: "object",
                         properties: {
@@ -89,17 +89,18 @@ export const CreateESwagger = {
                         totalseats: { type: "integer", example: 200 },
                         availableseats: { type: "integer", example: 180 },
                         bookedseats: { type: "integer", example: 20 },
-                        userId: { type: "string", example: "60f7b2c8e9f3c20017045a2d" }
+                        userId: { type: "string", example: "60f7b2c8e9f3c20017045a2d" },
+                        __v: { type: "number", example: 0 }
                         }
                     }
                 }
             },
             400: {
-                description: "Bad request (validation errors or missing fields)",
+                description: "Bad request (validation errors header not matching has per requirements)",
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "Missing required fields in the body when creating an event OR Validation failed body requirement not matching when creating an event OR Event date must be in the future" }
+                    message: { type: "string", example: "Validation failed in the header requirement not matching 123 123" }
                 }
             },
             401: {
@@ -110,6 +111,31 @@ export const CreateESwagger = {
                     message: { type: "string", example: "User role not having the permissions to do" }
                 }
             },
+            403: {
+                description: "Bad request missing required fields when creating the event)",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "Bad Request" },
+                    message: { type: "string", example: "Missing required fields in the body when creating an event" }
+                }
+            },
+            404: {
+                description: "Bad request (validation errors body not matching has per requirements)",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "Bad Request" },
+                    message: { type: "string", example: "Validation failed body requirement not matching when creating an event" }
+                }
+            },
+            405: {
+                description: "Bad request evet date must be in the future)",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "Bad Request" },
+                    message: { type: "string", example: "Event date must be in the future." }
+                }
+            },
+
             500: {
                 description: "Server error",
                 type: "object",
@@ -160,7 +186,7 @@ export const GetESwagger = {
                 }
             },
             400: {
-                description: "Bad request (missing authorization or validation error)",
+                description: "Bad request validation error header not matching has per requirements)",
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
@@ -234,12 +260,21 @@ export const GetByIdESwagger = {
                 }
             },
             400: {
-                description: "Bad request (missing headers or invalid parameters)",
+                description: "Bad request headers not matching has per requirements)",
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
                     message: { type: "string", example: "The authorization header is required, to get the events of the particular event manager based on the id" }
-                }
+                } 
+            },
+
+            401: {
+                description: "Bad request parameters not matching has per requirements)",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "Bad Request" },
+                    message: { type: "string", example: "params.id should match pattern \"^[0-9a-fA-F]{24}$\"" }
+                } 
             },
 
             404: {
@@ -253,7 +288,7 @@ export const GetByIdESwagger = {
                 description: "Server error",
                 type: "object",
                 properties: {
-                    error: { type: "string", example: "Internal Server Error" }
+                    error: { type: "string", example: "Internal Server Error while while executing the getbyId" }
                 }
             }
         }
@@ -320,12 +355,12 @@ export const UpdateByIdESwagger = {
                 }
             },
             400: {
-                description: "Bad request (invalid parameters, missing headers, or past event date)",
+                description: "Bad request  headers  not matching has per the requirements )",
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "The authorization header is required, to update the events of the particular event manager OR The id is required, to update the events of the particular event manager OR The body is not matching has per  requirements, to update the events of the particular event manager OR  Event date must be in the future OR event not found OR Event updating failed !This is what i found" }
-                }
+                    message: { type: "string", example: "The authorization header is required, to update the events of the particular event manager" }
+                }     
             },
             401: {
                 description: "Unauthorized request",
@@ -335,18 +370,34 @@ export const UpdateByIdESwagger = {
                     message: { type: "string", example: "User role not having the permissions to do" }
                 }
             },
-            // 404: {
-            //     description: "Event not found",
-            //     type: "object",
-            //     properties: {
-            //         error: { type: "string", example: "event not found" }
-            //     }
-            // },
+            403: {
+                description: "Bad request  params id is not working matching has per the requirements )",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "Bad Request" },
+                    message: { type: "string", example: "The id is required, to update the events of the particular event manager" }
+                }     
+            },
+            404: {
+                description: "Event not found",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "event not found" }
+                }
+            },
+            405: {
+                description: "Bad request evet date must be in the future)",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "Bad Request" },
+                    message: { type: "string", example: "Event date must be in the future." }
+                }
+            },
             500: {
                 description: "Server error",
                 type: "object",
                 properties: {
-                    error: { type: "string", example: "Internal Server Error" }
+                    error: { type: "string", example: "Internal Server Error while updating the event" }
                 }
             }
         }
@@ -391,12 +442,19 @@ export const DeleteByIdESwagger = {
                 }
             },
             400: {
-                description: "Bad request (invalid parameters, missing headers, or unauthorized user)",
+                description: "Bad request  headers not matching has per the requirements )",
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "The authorization header is required, to delete the events of the particular event manager OR The id is required, to delete the events of the particular event manager OR User role not having the permissions to do OR event not found" }
-
+                    message: { type: "string", example: "The authorization header is required, to delete the events of the particular event manager"}
+                }
+            },
+            405: {
+                description: "Bad request  params id is not matching has per the requirements )",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "Bad Request" },
+                    message: { type: "string", example: "The id is required, to delete the events of the particular event manager"}
                 }
             },
             404: {
@@ -410,7 +468,7 @@ export const DeleteByIdESwagger = {
                 description: "Server error",
                 type: "object",
                 properties: {
-                    error: { type: "string", example: "Internal Server Error" }
+                    error: { type: "string", example: "Internal Server Error while deleting the event" }
                 }
             }
         }

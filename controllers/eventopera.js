@@ -27,7 +27,7 @@ export const createEvent = async (request, reply) => {
     const currentDate = new Date();
 
     if (eventDate <= currentDate) {
-        return reply.status(400).send({
+        return reply.status(405).send({
             error: 'Bad Request',
             message: 'Event date must be in the future.',
         });
@@ -58,8 +58,8 @@ export const createEvent = async (request, reply) => {
 
     } catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: 'Database save failed,Error creating the Event' })
-    }
+        reply.status(500).send({ error: 'Database save failed,Error creating the Event' })
+    } 
 
 };
 
@@ -126,7 +126,7 @@ export const getevent = async (request, reply) => {
 
     } catch (error) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: 'Database failed while getting the events data,Error triggering the catch block' });
+        reply.status(500).send({ error: 'Database failed while getting the events data,Error triggering the catch block' });
     }
 };
 
@@ -146,7 +146,7 @@ export const getbyid = async (request, reply) => {
 
     } catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: err.message })
+        reply.status(500).send({ error:'Internal Server Error while while executing the getbyId' })
     }
 }
 
@@ -162,7 +162,7 @@ export const updateevent = async (request, reply) => {
     const currentDate = new Date();
 
     if (eventDate <= currentDate) {
-        return reply.status(400).send({
+        return reply.status(405).send({
             error: 'Bad Request',
             message: 'Event date must be in the future.',
         });
@@ -174,7 +174,7 @@ export const updateevent = async (request, reply) => {
         console.log(event, "result come ")
 
         if (!event || event.userId.toString() !== request.user.id) {
-            return reply.status(400).send({ error: 'event not found' })
+            return reply.status(404).send({ error: 'event not found' })
         }
 
 
@@ -204,7 +204,7 @@ export const updateevent = async (request, reply) => {
 
     } catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: err.message });
+        reply.status(500).send({ error: "Internal Server Error while updating the event" });
 
     }
 };
@@ -234,7 +234,7 @@ export const deleteevent = async (request, reply) => {
 
         const event = await Event.findByIdAndDelete(request.params.id);
         if (!event || event.userId.toString() !== request.user.id) {
-            return reply.status(400).send({ error: 'event not found' })
+            return reply.status(404).send({ error: 'event not found' })
         }
 
 
@@ -245,7 +245,7 @@ export const deleteevent = async (request, reply) => {
 
     } catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: err.message });
+        reply.status(500).send({ error: 'Internal Server Error while deleting the event' });
 
     }
 };
@@ -265,14 +265,14 @@ export const loc = async (request, reply) => {
     const { eventneedlocation } = request.body;
     try {
 
-        const existinglocation = await EventLoc.findOne({
-            userId: request.user.id
-        })
+        // const existinglocation = await EventLoc.findOne({
+        //     userId: request.user.id
+        // })
 
-        if (existinglocation) {
-            return reply.status(400).send({ message: "location already exist" })
+        // if (existinglocation) {
+        //     return reply.status(400).send({ message: "location already exist" })
 
-        }
+        // }
         const event = new EventLoc({
             eventneedlocation,
             userId: request.user.id

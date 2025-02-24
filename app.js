@@ -116,13 +116,23 @@ const PORT = process.env.PORT || 3000;
 //     app.log.info(`Server listening on ${address}`);
 // });
 
-app.listen({ port: PORT }, (err, address) => {
+app.listen({ port: PORT,host:"0.0.0.0" }, (err, address) => {
     if (err) {
         app.log.error(err);
         process.exit(1);
     }
     app.log.info(`Server listening on ${address}`);
 });
+
+
+// app.listen(3044, '0.0.0.0', (err, address) => {
+//     if (err) {
+//         app.log.error(err);
+//         process.exit(1);
+//     }
+//     console.log(`Server listening at ${address}`);
+// });
+
 
 
 console.log(`the server listening on port ${PORT}`);
