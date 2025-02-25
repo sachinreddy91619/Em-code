@@ -33,16 +33,16 @@ export default async (request, reply) => {
         // Check if the user has an active session in the Logs model
         const userLogs = await Logs.findOne({ UserId: userId });
 
-        console.log(userLogs);
+        console.log(userLogs,"iam from the logs model");
 
         // If no logs are found or if the UserToken is null, it means the user is logged out
-        if (!userLogs || userLogs.UserToken === null) {
-            return reply.status(403).send({ error: 'User is logged out, access denied' });
+        if(!userLogs || userLogs.UserToken === null){
+            return reply.status(406).send({ error: 'User is logged out, access denied' });
         }
 
         // Attach the user info to the request object for further use in route handlers
 
-        // console.log("HAIHAIHAIHAHAIHAIHAIHAIHAIHAIHAIHAIHAIHAIHAI")
+         //console.log("HAIHAIHAIHAHAIHAIHAIHAIHAIHAIHAIHAIHAIHAIHAI")
         request.user = decoded;
 
 
@@ -55,7 +55,7 @@ export default async (request, reply) => {
     catch (err) {
         Sentry.captureException(err);
         // console.error('Token verification failed:', err);
-        return reply.status(403).send({ error: 'Invalid or expired token' });
+        return reply.status(498).send({ error: 'Invalid or expired token' });
     }
 
 };

@@ -8,7 +8,7 @@ export const CreateESwagger = {
             type: "object",
             properties: {
                 Authorization: {
-                    type: "string",
+                    //type: "string",
                     description: "Bearer token for authentication",
                     example: "Bearer your_jwt_token_here"
                 }
@@ -16,46 +16,46 @@ export const CreateESwagger = {
             //s required: ["Authorization"]
         },
         body: {
-            type: "object",
+           // type: "object",
             properties: {
                 eventname: {
-                    type: "string",
+                    //type: "string",
                     example: "Tech Conference 2025",
                     description: "Name of the event",
                 },
                 eventdate: {
-                    type: "string",
-                    format: "date",
+                    //type: "string",
+                   // format: "date",
                     example: "2025-07-15",
                     description: "Date of the event (must be in the future)",
                 },
                 eventlocation: {
-                    type: "string",
+                    //type: "string",
                     example: "Hyderabad",
                     description: "Location where the event will be held",
                 },
                 amountrange: {
-                    type: "number",
+                   // type: "number",
                     example: 1500,
                     description: "Cost of attending the event",
                 },
                 eventtime: {
-                    type: "string",
+                    //type: "string",
                     example: "18:30:00",
                     description: "Time of the event (24-hour format)",
                 },
                 totalseats: {
-                    type: "integer",
+                    //type: "integer",
                     example: 200,
                     description: "Total number of seats available",
                 },
                 availableseats: {
-                    type: "integer",
+                    //type: "integer",
                     example: 180,
                     description: "Number of available seats for booking",
                 },
                 bookedseats: {
-                    type: "integer",
+                   // type: "integer",
                     example: 20,
                     description: "Number of seats already booked",
                 }
@@ -82,7 +82,9 @@ export const CreateESwagger = {
                         properties: {
                             _id: { type: "string", example: "60f7b2c8e9f3c20017045a2c" },
                         eventname: { type: "string", example: "Tech Conference 2025" },
-                        eventdate: { type: "string", format: "date", example: "2025-07-15" },
+                        eventdate: { type: "string",
+                            // format: "date", 
+                             example: "2025-07-15" },
                         eventlocation: { type: "string", example: "Hyderabad" },
                         amountrange: { type: "number", example: 1500 },
                         eventtime: { type: "string", example: "18:30:00" },
@@ -174,7 +176,9 @@ export const GetESwagger = {
                     properties: {
                         _id: { type: "string", example: "60f7b2c8e9f3c20017045a2c" },
                         eventname: { type: "string", example: "Tech Conference 2025" },
-                        eventdate: { type: "string", format: "date", example: "2025-07-15" },
+                        eventdate: { type: "string", 
+                           // format: "date",
+                             example: "2025-07-15" },
                         eventlocation: { type: "string", example: "Hyderabad" },
                         amountrange: { type: "number", example: 1500 },
                         eventtime: { type: "string", example: "18:30:00" },
@@ -225,7 +229,7 @@ export const GetByIdESwagger = {
             properties: {
                 id: {
                     type: "string",
-                    pattern: "^[0-9a-fA-F]{24}$",
+                    //pattern: "^[0-9a-fA-F]{24}$",
                     description: "Event ID (MongoDB ObjectId format)",
                     example: "65d9f5e7b2eabc1234567890"
                 }
@@ -250,14 +254,17 @@ export const GetByIdESwagger = {
                 properties: {
                     _id: { type: "string", example: "60f7b2c8e9f3c20017045a2c" },
                         eventname: { type: "string", example: "Tech Conference 2025" },
-                        eventdate: { type: "string", format: "date", example: "2025-07-15" },
+                        eventdate: { type: "string", 
+                           // format: "date",
+                             example: "2025-07-15" },
                         eventlocation: { type: "string", example: "Hyderabad" },
                         amountrange: { type: "number", example: 1500 },
                         eventtime: { type: "string", example: "18:30:00" },
                         totalseats: { type: "integer", example: 200 },
                         availableseats: { type: "integer", example: 180 },
                         bookedseats: { type: "integer", example: 20 },
-                        userId: { type: "string", example: "60f7b2c8e9f3c20017045a2d" }
+                        userId: { type: "string", example: "60f7b2c8e9f3c20017045a2d" },
+                        __v: { type: "number", example: 0 }
                 }
             },
             400: {
@@ -309,7 +316,7 @@ export const UpdateByIdESwagger = {
             properties: {
                 id: {
                     type: "string",
-                    pattern: "^[0-9a-fA-F]{24}$",
+                    //pattern: "^[0-9a-fA-F]{24}$",
                     description: "Event ID (MongoDB ObjectId format)",
                     example: "65d9f5e7b2eabc1234567890"
                 }
@@ -320,21 +327,37 @@ export const UpdateByIdESwagger = {
             type: "object",
             properties: {
                 Authorization: {
-                    type: "string",
+                  //  type: "string",
                     description: "Bearer token for authentication",
                     example: "Bearer your_jwt_token_here"
                 }
             },
-            required: ["Authorization"]
+           // required: ["Authorization"]
         },
         body: {
-            type: "object",
+           // type: "object",
             properties: {
-                eventname: { type: "string", example: "Tech Meetup 2025" },
-                eventdate: { type: "string", format: "date", example: "2025-08-20" },
-                eventlocation: { type: "string", example: "Bangalore" },
-                amountrange: { type: "number", example: 2000 },
-                eventtime: { type: "string", example: "14:00:00" }
+
+                eventname: { 
+                type: "string",
+                example: "Tech Meetup 2025" 
+                },
+
+                eventdate: { 
+                    //type: "string", 
+                  //  format: "date", 
+                    example: "2025-08-20" },
+
+
+                eventlocation: { type: "string", 
+                    example: "Bangalore" },
+
+                amountrange: { 
+                    //type: "number", 
+                    example: 2000 },
+
+                eventtime: { type: "string", 
+                    example: "14:00:00" }
             },
             // required: ["eventdate"]
         },
@@ -345,7 +368,9 @@ export const UpdateByIdESwagger = {
                 properties: {
                     _id: { type: "string", example: "60f7b2c8e9f3c20017045a2c" },
                         eventname: { type: "string", example: "Tech Conference 2025" },
-                        eventdate: { type: "string", format: "date", example: "2025-07-15" },
+                        eventdate: { type: "string", 
+                            //format: "date",
+                             example: "2025-07-15" },
                         eventlocation: { type: "string", example: "Hyderabad" },
                         amountrange: { type: "number", example: 1500 },
                         eventtime: { type: "string", example: "18:30:00" },
@@ -394,6 +419,14 @@ export const UpdateByIdESwagger = {
                     message: { type: "string", example: "Event date must be in the future." }
                 }
             },
+            410: {
+                description: "Bad request  the body is not matching has per the requirements )",
+               // type: "object",
+                properties: {
+                    error: { type: "string", example: "Bad Request" },
+                    message: { type: "string", example: "The body is not matching has per  requirements, to update the events of the particular event manager" }
+                }     
+            },
             500: {
                 description: "Server error",
                 type: "object",
@@ -416,7 +449,7 @@ export const DeleteByIdESwagger = {
             properties: {
                 id: {
                     type: "string",
-                    pattern: "^[0-9a-fA-F]{24}$",
+                  //  pattern: "^[0-9a-fA-F]{24}$",
                     description: "Event ID (MongoDB ObjectId format)",
                     example: "65d9f5e7b2eabc1234567890"
                 }

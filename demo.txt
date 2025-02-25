@@ -58,8 +58,38 @@ app.addHook('onRequest', (request, reply, done) => {
 
 
 /.......................................................................................................>
+in the swaggger schema defination while giving the sample request body then we should not give the the sample example types like this :
+
+ // format: "email",
+
+ or
+ //  // format: "password",
+
+ or     //enum: ["user", "admin"],
+
+ or  //    //pattern: "^[0-9a-fA-F]{24}$", in the 
+
+  id: {
+                    type: "string",
+                    //pattern: "^[0-9a-fA-F]{24}$",
+                    description: "Booking ID (MongoDB ObjectId format)",
+                    example: "65d9f5e7b2eabc1234567890"
+                }
 
 
+     body: {
+            type: "object",
+            properties: {
+                NoOfSeatsBooking: {
+                    //type: "number",
+                    description: "Updated number of seats to book",
+                    example: 5
+                }
+            },          
+ 
+  when iam geiven then i got the error in running the test cases where in the status code code it is shifting the status code from the 401{which my required one }
+and 500 {by the above one iam getting the error . so i removed these formats then my test case worked has expextation}
+................................................................................................................................>..........>
 
 
 

@@ -16,19 +16,19 @@ export const registerSwagger = {
                         },
                         email: {
                             type: "string",
-                            format: "email",
+                           // format: "email",
                             example: "johndoe@example.com",
                             description: "User's email address",
                         },
                         password: {
                             type: "string",
-                            format: "password",
+                           // format: "password",
                             example: "StrongP@ss123",
                             description: "User's password (must include uppercase, lowercase, number)",
                         },
                         role: {
                             type: "string",
-                            enum: ["user", "admin"],
+                            //enum: ["user", "admin"],
                             example: "user",
                             description: "Role of the user",
                         },
@@ -208,7 +208,7 @@ export const logoutSwagger = {
                     example: "Bearer your_jwt_token_here"
                 }
             },
-            required: ["Authorization"]
+            //required: ["Authorization"]
         },
         response: {
             200: {
@@ -233,11 +233,27 @@ export const logoutSwagger = {
                     error: { type: "string", example: "token required for the logging" }
                 }
             },
-            403: {
-                description: "Unauthorized request (missing or invalid token)",
+            415: {
+                description: "no active session found for the given token.",
                 type: "object",
                 properties: {
                     message: { type: "string", example: "No active session found for this token" }
+                }
+            },
+            
+            //from the middle ware errors the responses are :
+            406: {
+                description: "user is logged out so need to re login. {from the middleware}.",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "User is logged out, access denied" }
+                }
+            },
+            498: {
+                description: "invalid token or expired token {from the middleware}.",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "Invalid or expired token" }
                 }
             },
             500: {

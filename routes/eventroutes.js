@@ -269,7 +269,7 @@ async function eventRoutes(fastify, options) {
 
       if (bodyError) {
 
-        return reply.status(400).send({
+        return reply.status(410).send({
           error: 'Bad Request',
           message: 'The body is not matching has per  requirements, to update the events of the particular event manager'
         })
@@ -378,7 +378,7 @@ async function eventRoutes(fastify, options) {
 
         if (bodyError) {
 
-          return reply.status(400).send({
+          return reply.status(405).send({
             error: 'Bad Request',
             message: 'The body is not matching has per  requirements, to provide the location of the user'
           })
@@ -439,7 +439,7 @@ async function eventRoutes(fastify, options) {
 
         if (NoSeatsError) {
 
-          return reply.status(400).send({
+          return reply.status(405).send({
 
             error: 'Bad Request',
             message: 'The  body is missing the required format while booking the event'
@@ -490,7 +490,7 @@ async function eventRoutes(fastify, options) {
 
         return reply.status(400).send({
           error: 'Bad Request',
-          message: 'The authorization header is required, to all of the bookings'
+          message: 'The authorization header is required, to get the all of  bookings for this user'
         })
 
 
@@ -541,7 +541,7 @@ async function eventRoutes(fastify, options) {
 
         if (UserUpdationError) {
 
-          return reply.status(400).send({
+          return reply.status(405).send({
             error: 'Bad Request',
             message: 'The Body is not Matching has per the requirements, give correct body for updation'
           })
@@ -553,7 +553,7 @@ async function eventRoutes(fastify, options) {
 
         if (UserparamsgivenError) {
 
-          return reply.status(400).send({
+          return reply.status(408).send({
             error: 'Bad Request',
             message: 'The params is not Matching has per the requirements, give correct params id for updation'
           })
@@ -596,7 +596,7 @@ async function eventRoutes(fastify, options) {
 
         if (UserparamsgivenError) {
 
-          return reply.status(400).send({
+          return reply.status(405).send({
 
             error: 'Bad Request',
             message: 'The params is not Matching has per the requirements, give correct params id for cancelling the event booking'

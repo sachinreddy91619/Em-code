@@ -33,7 +33,7 @@ jest.mock('bcrypt');
 dotenv.config();
 
 beforeAll(async () => {
-    await app.listen(3044); // Ensure the Fastify app is running on port 3044
+    await app.listen({ port: 3044, host: '0.0.0.0' }); // Ensure the Fastify app is running on port 3044
 });
 
 afterAll(async () => {
@@ -50,7 +50,7 @@ afterEach(() => {
 // test-case-1:  Testing if the user already exists
 describe("testing the registration of user", () => {
 
-    test("should respond with 400 status code when user already exits", async () => {
+    test("should respond with 403 status code when user already exits", async () => {
         // Mock findOne to return a user with the username 'testname'
         Users.findOne.mockResolvedValue({ username: 'testname' });
 
@@ -533,7 +533,12 @@ describe("Testcases for the logout functionality", () => {
 
         test("should return 500 status when Logs.findOne throws an error", async () => {
 
-            Logs.findOne.mockRejectedValue(new Error('error while logout of the current-user'));
+            // const mockSave = jest.fn().mockRejectedValue(new Error('Database error'));
+            // Logs.prototype.save = mockSave;
+
+            Logs.findOne.mockRejectedValue(new Error('error while logout of the current-user'))
+        
+      
 
             const response = await app.inject({
                 method: 'POST',
@@ -550,6 +555,7 @@ describe("Testcases for the logout functionality", () => {
             const responseBody = JSON.parse(response.body);
 
             expect(responseBody.error).toEqual('error while logout of the current-user');
+            //expect(mockSave).toHaveBeenCalledTimes(1);
         }),
 
 
@@ -570,7 +576,7 @@ describe("Testcases for the logout functionality", () => {
             });
 
 
-            expect(response.statusCode).toBe(403);
+            expect(response.statusCode).toBe(406);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
             const responseBody = JSON.parse(response.body);
@@ -600,7 +606,7 @@ describe("Testcases for the logout functionality", () => {
             // Log response for debugging
             console.log("Response Body:", response.body);
 
-            expect(response.statusCode).toBe(403);
+            expect(response.statusCode).toBe(498);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
             const responseBody = JSON.parse(response.body);

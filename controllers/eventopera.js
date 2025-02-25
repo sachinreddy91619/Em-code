@@ -125,7 +125,7 @@ export const getevent = async (request, reply) => {
 
 
     } catch (error) {
-        Sentry.captureException(err);
+        Sentry.captureException(error);
         reply.status(500).send({ error: 'Database failed while getting the events data,Error triggering the catch block' });
     }
 };
@@ -283,7 +283,7 @@ export const loc = async (request, reply) => {
 
     } catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ message: "getting the error while giving the event location" })
+        reply.status(500).send({ message: "getting the error while giving the event location" })
     }
 }
 
@@ -311,7 +311,7 @@ export const locationevent = async (request, reply) => {
         const event1 = await Event.find({ eventlocation: loc });
 
         if (!event1 || event1.length === 0) {
-            return reply.status(404).send({ message: "No events found for this location" });
+            return reply.status(405).send({ message: "No events found for this location" });
         }
 
         console.log(event1)
@@ -321,7 +321,7 @@ export const locationevent = async (request, reply) => {
     }
     catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: err.message })
+        reply.status(500).send({ error: "Server error while retrieving events." })
     }
 }
 
@@ -345,12 +345,12 @@ export const eventbook = async (request, reply) => {
         const event = await Event.findById(request.params.id);
 
         if (event.availableseats === 0) {
-            return reply.status(400).send({ message: "event is fully booked" })
+            return reply.status(408).send({ message: "event is fully booked" })
         }
 
 
         if (NoOfSeatsBooking > event.availableseats) {
-            return reply.status(400).send({ message: `maximum number of seats can be booked :${event.availableseats}, so please reduce the number of seats` })
+            return reply.status(410).send({ message: `maximum number of seats can be booked :${event.availableseats}, so please reduce the number of seats` })
 
         }
 
@@ -420,7 +420,7 @@ export const eventbook = async (request, reply) => {
 
     } catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: err.message })
+        reply.status(500).send({ error: "Server error while booking the event." })
     }
 
 }
@@ -438,7 +438,7 @@ export const getallbookings = async (request, reply) => {
     }
     catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: err.message });
+        reply.status(500).send({ error: "Server error while retrieving all bookings" });
 
     }
 }
@@ -455,7 +455,7 @@ export const booking = async (request, reply) => {
         console.log(book, "this is booking data")
 
         if (!book || book.userId.toString() !== request.user.id) {
-            return reply.status(400).send({ error: 'event not found here' })
+            return reply.status(410).send({ error: 'event not found for the given params id while updation' })
         }
 
 
@@ -463,7 +463,7 @@ export const booking = async (request, reply) => {
 
 
         if (NoOfSeatsBooking > event1.availableseats) {
-            return reply.status(400).send({ message: `maximum number of seats can be booked :${event1.availableseats}, so please reduce the number of seats` })
+            return reply.status(415).send({ message: `maximum number of seats can be booked :${event1.availableseats}, so please reduce the number of seats` })
         }
 
         // if (NoOfSeatsBooking) {
@@ -528,7 +528,7 @@ export const booking = async (request, reply) => {
     catch (err) {
         Sentry.captureException(err);
 
-        reply.status(400).send({ error: err.message });
+        reply.status(500).send({ error:"Server error while updating the booking." });
 
     }
 }
@@ -565,7 +565,7 @@ export const eventdelete = async (request, reply) => {
         const event = await EMB.findByIdAndDelete(request.params.id);
 
         if (!event || event.userId.toString() !== request.user.id) {
-            return reply.status(400).send({ error: 'bookings not found' });
+            return reply.status(408).send({ message: "bookings not found" });
         }
 
         const d = event.NoOfSeatsBooking;
@@ -584,6 +584,6 @@ export const eventdelete = async (request, reply) => {
 
     catch (err) {
         Sentry.captureException(err);
-        reply.status(400).send({ error: err.message });
+        reply.status(500).send({ error:"Server error while deleting the booking." });
     }
 }

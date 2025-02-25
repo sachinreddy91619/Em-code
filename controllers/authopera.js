@@ -170,7 +170,7 @@ export const logout = async (request, reply) => {
         console.log("User logs for logout:", userlogs);
 
         if (!userlogs) {
-            return reply.status(403).send({ message: 'No active session found for this token' });
+            return reply.status(415).send({ message: 'No active session found for this token' });
         }
 
 

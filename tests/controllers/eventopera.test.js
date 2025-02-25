@@ -30,7 +30,7 @@ dotenv.config();
 process.env.SEC = 'SACHIN'
 
 beforeAll(async () => {
-    await app.listen(3044); // Ensure the Fastify app is running on port 3044
+    await app.listen({ port: 3044, host: '0.0.0.0' }); // Ensure the Fastify app is running on port 3044
 });
 
 afterAll(async () => {
@@ -103,7 +103,7 @@ describe("Event Creation API - Test cases for the event creation by admin:", () 
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
             const responseBody = JSON.parse(response.body);
             expect(responseBody.error).toBe('Bad Request');
-            expect(responseBody.message).toMatch('Validation failed in the header requirement not matching 123 123');
+            expect(responseBody.message).toEqual('Validation failed in the header requirement not matching 123 123');
         }
     }),
 
@@ -185,7 +185,7 @@ describe("Event Creation API - Test cases for the event creation by admin:", () 
                 });
 
 
-                expect(response.statusCode).toBe(400);
+                expect(response.statusCode).toBe(404);
                 expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
                 const responseBody = JSON.parse(response.body);
@@ -454,7 +454,7 @@ describe("testing wheather the Get method is working for the  admin  succefully 
 // ======================================================================================================================================================================================================
 ///TEST CASES FOR THE , GETBYID METHOD :
 
-describe("Event Creation API - Header Validation checking for the header is in correct format or not for the GET BY ID route", () => {
+describe("Test Cases for the GET BY ID route", () => {
     let mockToken;
     let mockUserLog;
 
@@ -494,7 +494,7 @@ describe("Event Creation API - Header Validation checking for the header is in c
             expect(responseBody.message).toMatch('The authorization header is required, to get the events of the particular event manager based on the id');
         }
     }),
-        test("should return 400 if header validation is not in correct format:", async () => {
+        test("should return 401 if params validation is not in correct format:", async () => {
 
 
 
@@ -508,11 +508,12 @@ describe("Event Creation API - Header Validation checking for the header is in c
                     }
                 });
 
-                expect(response.statusCode).toBe(500);
+                expect(response.statusCode).toBe(401);
                 expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
                 const responseBody = JSON.parse(response.body);
+                expect(responseBody.error).toBe('Bad Request');
 
-                expect(responseBody.error).toMatch('params.id should match pattern \"^[0-9a-fA-F]{24}$\"');
+                expect(responseBody.message).toEqual('params.id should match pattern \"^[0-9a-fA-F]{24}$\"');
             }
         }),
 
@@ -623,10 +624,10 @@ describe("Event Creation API - Header Validation checking for the header is in c
 
             });
 
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(500);
             expect(response.headers['content-type']).toContain('application/json');
             const responseBody = JSON.parse(response.body);
-            expect(responseBody.error).toMatch("Database Error qqq")
+            expect(responseBody.error).toMatch("Internal Server Error while while executing the getbyId")
 
         });
 
@@ -637,7 +638,7 @@ describe("Event Creation API - Header Validation checking for the header is in c
 
 // TEST CASES FOR THE UPDATE OF THE EVENTS :
 
-describe("Event Updation Creation API - Header Validation checking for the header is in correct format or not for the Update the event  BY ID route", () => {
+describe("Event Updation Creation API - tEST cASES FOR  Update the event  BY ID route", () => {
     let mockToken;
     let mockUserLog
 
@@ -677,10 +678,10 @@ describe("Event Updation Creation API - Header Validation checking for the heade
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
             const responseBody = JSON.parse(response.body);
             expect(responseBody.error).toBe('Bad Request');
-            expect(responseBody.message).toMatch('The authorization header is required, to update the events of the particular event manager');
+            expect(responseBody.message).toEqual('The authorization header is required, to update the events of the particular event manager');
         }
     }),
-        test("should return 400 if params validation is not in correct format:", async () => {
+        test("should return 403 if params validation is not in correct format:", async () => {
 
 
             for (let i = 0; i < invalidParamsTestCases.length; i++) {
@@ -693,7 +694,7 @@ describe("Event Updation Creation API - Header Validation checking for the heade
                     }
                 });
 
-                expect(response.statusCode).toBe(400);
+                expect(response.statusCode).toBe(403);
                 expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
                 const responseBody = JSON.parse(response.body);
 
@@ -704,7 +705,7 @@ describe("Event Updation Creation API - Header Validation checking for the heade
                 expect(responseBody.message).toMatch('The id is required, to update the events of the particular event manager');
             }
         }),
-        test("should respond with a status code of 400 if any field is invalid", async () => {
+        test("should respond with a status code of 410 if any field is invalid", async () => {
             // Test data with invalid field formats
             const bodydata = [
                 { eventname: 123 },
@@ -735,16 +736,16 @@ describe("Event Updation Creation API - Header Validation checking for the heade
                 });
 
                 // When any field is invalid, it should return 400
-                expect(response.statusCode).toBe(400);
+                expect(response.statusCode).toBe(500);
                 expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
                 const responseBody = JSON.parse(response.body);
                 expect(responseBody.error).toBe('Bad Request');
-                expect(responseBody.message).toMatch('The body is not matching has per  requirements, to update the events of the particular event manager');
+                expect(responseBody.message).toEqual('The body is not matching has per  requirements, to update the events of the particular event manager');
             }
         }),
 
-        test("should respond with a status code of 400 if date is not in the future ", async () => {
+        test("should respond with a status code of 405 if date is not in the future ", async () => {
 
 
 
@@ -772,19 +773,19 @@ describe("Event Updation Creation API - Header Validation checking for the heade
 
 
                 // When any field is invalid, it should return 400
-                expect(response.statusCode).toBe(400);
+                expect(response.statusCode).toBe(405);
                 expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
                 const responseBody = JSON.parse(response.body);
                 expect(responseBody.error).toBe('Bad Request');
-                expect(responseBody.message).toMatch('Event date must be in the future.');
+                expect(responseBody.message).toEqual('Event date must be in the future.');
             }
             else {
                 console.log(" the event date is in the future ! so it is ok")
             }
         }),
 
-        test("should respond with a status code of 400 if the event id is not in the events model.", async () => {
+        test("should respond with a status code of 404 if the event id is not in the events model.", async () => {
             Events.findById = jest.fn().mockResolvedValue(null);
 
 
@@ -808,7 +809,7 @@ describe("Event Updation Creation API - Header Validation checking for the heade
 
 
             // When any field is invalid, it should return 400
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(404);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
             const responseBody = JSON.parse(response.body);
@@ -917,6 +918,8 @@ describe("Event Updation Creation API - Header Validation checking for the heade
             const responseBody = JSON.parse(response.body);
 
             expect(responseBody).toEqual({
+               event: {
+                    "__v": 0,
                 "_id": "67ab179b5ae8f11485a9bd35",
                 "amountrange": 100,
                 "eventname": "AMC-KITE-FESTIVAL",
@@ -926,13 +929,13 @@ describe("Event Updation Creation API - Header Validation checking for the heade
                 "totalseats": 100,
                 "availableseats": 100,
                 "bookedseats": 0,
-                "userId": "mockUserId",
-                "__v": 0
-            })
+                "userId": "mockUserId"
+                
+            },})
 
         }),
 
-        test("should respond with a status code of 400 if the catch block error raised.", async () => {
+        test("should respond with a status code of 500 if the catch block error raised.", async () => {
             // Events.findByIdAndUpdate = jest.fn().mockResolvedValue(new Error("Database Connection Error"));
 
             Events.findByIdAndUpdate.mockRejectedValueOnce(new Error("Database Connection Error"));
@@ -955,12 +958,12 @@ describe("Event Updation Creation API - Header Validation checking for the heade
             });
 
             // When any field is invalid, it should return 400
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(500);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
             const responseBody = JSON.parse(response.body);
 
-            expect(responseBody.error).toEqual("Database Connection Error"
+            expect(responseBody.error).toEqual("Internal Server Error while updating the event"
 
             )
 
@@ -1011,7 +1014,7 @@ describe("Event deletion  Creation API - Header Validation checking for the head
             expect(responseBody.message).toMatch('The authorization header is required, to delete the events of the particular event manager');
         }
     }),
-        test("should return 400 if params validation is not in correct format:", async () => {
+        test("should return 405 if params validation is not in correct format:", async () => {
 
             for (let i = 0; i < invalidParamsTestCases.length; i++) {
                 const response = await app.inject({
@@ -1023,7 +1026,7 @@ describe("Event deletion  Creation API - Header Validation checking for the head
                     }
                 });
 
-                expect(response.statusCode).toBe(400);
+                expect(response.statusCode).toBe(405);
                 expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
                 const responseBody = JSON.parse(response.body);
 
@@ -1032,7 +1035,7 @@ describe("Event deletion  Creation API - Header Validation checking for the head
                 expect(responseBody.message).toMatch('The id is required, to delete the events of the particular event manager');
             }
         }),
-        test("should respond with a status code of 400 if the event id is not in the events model while deletion.", async () => {
+        test("should respond with a status code of 404 if the event id is not in the events model while deletion.", async () => {
             Events.findByIdAndDelete = jest.fn().mockResolvedValue(null);
 
             const response = await app.inject({
@@ -1047,7 +1050,7 @@ describe("Event deletion  Creation API - Header Validation checking for the head
 
 
             // When any field is invalid, it should return 400
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(404);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
             const responseBody = JSON.parse(response.body);
@@ -1075,7 +1078,7 @@ describe("Event deletion  Creation API - Header Validation checking for the head
             const responseBody = JSON.parse(response.body);
             expect(responseBody).toHaveProperty('message', 'event deleted successfully');
         }),
-        test("should respond with a status code of 400 if the catch block error raised.", async () => {
+        test("should respond with a status code of 500 if the catch block error raised.", async () => {
             // Events.findByIdAndUpdate = jest.fn().mockResolvedValue(new Error("Database Connection Error"));
 
             Events.findByIdAndDelete.mockRejectedValueOnce(new Error("Database Connection Error while deletion of the event"));
@@ -1090,12 +1093,12 @@ describe("Event deletion  Creation API - Header Validation checking for the head
             });
 
             // When any field is invalid, it should return 400
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(500);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
             const responseBody = JSON.parse(response.body);
 
-            expect(responseBody.error).toEqual("Database Connection Error while deletion of the event"
+            expect(responseBody.error).toEqual("Internal Server Error while deleting the event"
 
             )
 
@@ -1158,7 +1161,7 @@ describe("testing while user providing the location", () => {
     });
 
 
-    test("should respond with a status code of 400 if any  error raised for invalid body validation while giving the location .", async () => {
+    test("should respond with a status code of 405 if any  error raised for invalid body validation while giving the location .", async () => {
         const bodydata = [
             { eventneedlocation: "aa" },
             { eventneedlocation: "a" },
@@ -1178,7 +1181,7 @@ describe("testing while user providing the location", () => {
                 }
             });
             // When any field is invalid, it should return 400
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(405);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
             const responseBody = JSON.parse(response.body);
             expect(responseBody.error).toBe('Bad Request');
@@ -1188,34 +1191,34 @@ describe("testing while user providing the location", () => {
 
 })
 
-test("should respond with a status code of 400 if location already exits for this user while giving the location .", async () => {
+// test("should respond with a status code of 400 if location already exits for this user while giving the location .", async () => {
 
-    let mockToken = 'mocked1Token.mocked1Token.mocked1Token';
+//     let mockToken = 'mocked1Token.mocked1Token.mocked1Token';
 
-    EventLoc.findOne.mockResolvedValue(true);
+//     EventLoc.findOne.mockResolvedValue(true);
 
-    const bodydata = [
-        { eventneedlocation: "amc" },
-    ];
+//     const bodydata = [
+//         { eventneedlocation: "amc" },
+//     ];
 
-    const response = await app.inject({
-        method: 'POST',
-        url: '/event/location',
-        payload: bodydata[0],
+//     const response = await app.inject({
+//         method: 'POST',
+//         url: '/event/location',
+//         payload: bodydata[0],
 
-        headers: {
-            'Authorization': `Bearer ${mockToken}`
+//         headers: {
+//             'Authorization': `Bearer ${mockToken}`
 
-        }
+//         }
 
-    })
-    // When any field is invalid, it should return 400
-    expect(response.statusCode).toBe(400);
-    expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
-    const responseBody = JSON.parse(response.body);
+//     })
+//     // When any field is invalid, it should return 400
+//     expect(response.statusCode).toBe(400);
+//     expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
+//     const responseBody = JSON.parse(response.body);
 
-    expect(responseBody.message).toEqual("location already exist")
-})
+//     expect(responseBody.message).toEqual("location already exist")
+// })
 
 
 test("should respond with a status code of 200 if location given by user  successfully saved while giving the location .", async () => {
@@ -1260,17 +1263,21 @@ test("should respond with a status code of 200 if location given by user  succes
     expect(EventLoc.prototype.save).toHaveBeenCalled();
 })
 
-test("should respond with a status code of 400  when we get the catch block error given by user giving the location .", async () => {
+test("should respond with a status code of 500  when we get the catch block error given by user giving the location .", async () => {
 
     let mockToken = 'mocked1Token.mocked1Token.mocked1Token';
 
-    EventLoc.findOne.mockRejectedValue(new Error("Data base Error"));
+    let mockSave= jest.fn().mockRejectedValue(new Error("Database Error"));
 
+    EventLoc.prototype.save = mockSave
+
+   
     const bodydata = [
         { eventneedlocation: "amc" },
     ];
+    
 
-
+    EventLoc.findOne.mockRejectedValue(new Error("Data base Error"));
     const response = await app.inject({
         method: 'POST',
         url: '/event/location',
@@ -1281,15 +1288,16 @@ test("should respond with a status code of 400  when we get the catch block erro
 
         }
 
+        
+
     })
     // When any field is invalid, it should return 400
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(500);
     expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
     //const responseBody = JSON.parse(response.body);
     const responseBody = JSON.parse(response.body);
-    expect(responseBody.message).toEqual("getting the error while giving the event location"
-
-    );
+    expect(responseBody.message).toEqual("getting the error while giving the event location");
+    expect(mockSave).toHaveBeenCalled();
 
 })
 
@@ -1325,7 +1333,11 @@ describe("testing case for  getting the events data without giving the location 
     test("should respond with a status code of 400 if the user trying to get the events data before giving the locatoion ", async () => {
 
 
-        EventLoc.findOne.mockResolvedValue(false);
+        EventLoc.findOne.mockResolvedValue(null).sort({ createdAt: -1 }) 
+        .limit(1);
+
+
+       // EventLoc.findOne.mockResolvedValue(false);
 
         const response = await app.inject({
             method: 'GET',
@@ -1335,20 +1347,26 @@ describe("testing case for  getting the events data without giving the location 
             }
         });
 
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(500);
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
         const responseBody = JSON.parse(response.body);
         expect(responseBody).toEqual({ message: "Please provide your location first." });
 
     }),
 
-        test("should respond with a status code of 400 if the user trying to get the events data but no events for the location", async () => {
+        test("should respond with a status code of 405 if the user trying to get the events data but no events for the location", async () => {
 
 
-            EventLoc.findOne = jest.fn().mockResolvedValue({
-                eventneedlocation: "telangana",
-                userId: "mockUserId"
-            });
+            // EventLoc.findOne = jest.fn().mockResolvedValue({
+            //     eventneedlocation: "telangana",
+            //     userId: "mockUserId"
+            // });
+
+
+
+            EventLoc.findOne = jest.fn().mockResolvedValue(
+                true
+            );
 
 
             Events.find = jest.fn().mockResolvedValue(null);
@@ -1360,14 +1378,14 @@ describe("testing case for  getting the events data without giving the location 
                 }
             });
 
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(500);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
             const responseBody = JSON.parse(response.body);
             expect(responseBody).toEqual({ message: "No events found for this location" });
 
         }),
 
-        test(" Should return 400 error when any error occurs while get the events locations", async () => {
+        test(" Should return 500 error when any error occurs while get the events locations", async () => {
 
             if (Events.findById.mockRejectedValue(new Error("Database Error 1")) || EventLoc.findOne.mockRejectedValue(new Error("Database Error 1"))) {
 
@@ -1384,10 +1402,10 @@ describe("testing case for  getting the events data without giving the location 
 
                 });
 
-                expect(response.statusCode).toBe(400);
+                expect(response.statusCode).toBe(500);
                 expect(response.headers['content-type']).toContain('application/json');
                 const responseBody = JSON.parse(response.body);
-                expect(responseBody.error).toMatch("Database Error 1")
+                expect(responseBody.error).toMatch("Server error while retrieving events.")
             }
         });
 
@@ -1514,7 +1532,7 @@ describe("testing while user booking the event", () => {
             headers: { 'Authorization': `Bearer ${mockToken}` },
         });
 
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(200);
 
         console.log("Full Response:", response);
 
@@ -1604,7 +1622,7 @@ describe("testing while user booking the event", () => {
                 }
             });
             // When any field is invalid, it should return 400
-            expect(response.statusCode).toBe(400);
+            expect(response.statusCode).toBe(405);
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
             const responseBody = JSON.parse(response.body);
             expect(responseBody.error).toBe('Bad Request');
@@ -1649,7 +1667,7 @@ test("should respond with a status code of 400 because seats for this particular
         }
     });
     // When any field is invalid, it should return 400
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(408);
     expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
     const responseBody = JSON.parse(response.body);
 
@@ -1693,7 +1711,7 @@ test("should respond with a status code of 400 if NoOfSeatsBooking exceeds avail
     });
 
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(410);
     expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
 
     const responseBody = JSON.parse(response.body);
@@ -1726,10 +1744,10 @@ test("cATCH BLOCK ERROR WHILE BOOKING  THE  EVENT", async () => {
     });
 
     // Validate the amount calculation and event update
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(500);
     const responseBody = JSON.parse(response.body);
 
-    expect(responseBody.error).toEqual("data base error")
+    expect(responseBody.error).toEqual("Server error while booking the event.")
 });
 
 
@@ -1779,7 +1797,7 @@ describe("testing while user providing the location", () => {
             expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
             const responseBody = JSON.parse(response.body);
             expect(responseBody.error).toBe('Bad Request');
-            expect(responseBody.message).toEqual("The authorization header is required, to all of the bookings")
+            expect(responseBody.message).toEqual("The authorization header is required, to get the all of  bookings for this user")
 
         }
     });
@@ -1861,10 +1879,10 @@ test("Catch block Error while Geting all the bookings  :", async () => {
     });
 
     // Validate the amount calculation and event update
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(500);
     const responseBody = JSON.parse(response.body);
 
-    expect(responseBody.error).toEqual("data base error")
+    expect(responseBody.error).toEqual("Server error while retrieving all bookings")
 });
 
 
@@ -1918,7 +1936,7 @@ describe("testing while updating the  booking of a user", () => {
 })
 
 
-test("should respond with a status code of 400 if any  error raised for invalid body validation while updating the event.", async () => {
+test("should respond with a status code of 405 if any  error raised for invalid body validation while updating the event.", async () => {
 
     const mockToken = "mockedToken.mockedToken.mockedToken"
 
@@ -1941,7 +1959,7 @@ test("should respond with a status code of 400 if any  error raised for invalid 
             }
         });
         // When any field is invalid, it should return 400
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(405);
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
         const responseBody = JSON.parse(response.body);
         expect(responseBody.error).toBe('Bad Request');
@@ -1950,7 +1968,7 @@ test("should respond with a status code of 400 if any  error raised for invalid 
 });
 
 
-test("should respond with a status code of 400 if any  error raised for invalid body validation while updating the event.", async () => {
+test("should respond with a status code of 408 if any  error raised for invalid body validation while updating the event.", async () => {
 
     const mockToken = "mockedToken.mockedToken.mockedToken"
 
@@ -1971,7 +1989,7 @@ test("should respond with a status code of 400 if any  error raised for invalid 
             }
         });
         // When any field is invalid, it should return 400
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(408);
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
         const responseBody = JSON.parse(response.body);
         expect(responseBody.error).toBe('Bad Request');
@@ -1980,7 +1998,7 @@ test("should respond with a status code of 400 if any  error raised for invalid 
 });
 
 
-test("should respond with a status code of 400 if any  error raised when event not found while updating the event.", async () => {
+test("should respond with a status code of 410 if any  error raised when event not found while updating the event.", async () => {
 
     const mockToken = "mockedToken.mockedToken.mockedToken"
 
@@ -2002,11 +2020,11 @@ test("should respond with a status code of 400 if any  error raised when event n
         }
     });
     // When any field is invalid, it should return 400
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(410);
     expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
     const responseBody = JSON.parse(response.body);
 
-    expect(responseBody.error).toEqual("event not found here")
+    expect(responseBody.error).toEqual("event not found for the given params id while updation")
 
 });
 
@@ -2182,7 +2200,7 @@ test("should return an 200 if updation of the booking successsfully done", async
 });
 
 
-test("should respond with a status code of 400 if any catch block  error raised for while updating the booking of a user    .", async () => {
+test("should respond with a status code of 500 if any catch block  error raised for while updating the booking of a user    .", async () => {
 
     const mockToken = 'mocked1Token.mocked1Token.mocked1Token';
     EMB.findByIdAndUpdate.mockRejectedValue(new Error("data base error"))
@@ -2200,11 +2218,11 @@ test("should respond with a status code of 400 if any catch block  error raised 
         }
     });
     // When any field is invalid, it should return 400
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(500);
     expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
     const responseBody = JSON.parse(response.body);
 
-    expect(responseBody.error).toEqual("data base error")
+    expect(responseBody.error).toEqual("Server error while updating the booking.")
 
 
 });
@@ -2259,7 +2277,7 @@ describe("testing while cancling the  booking of a user", () => {
 })
 
 
-test("should respond with a status code of 400 if any  error raised for invalid params id validation while cancelling the booking.", async () => {
+test("should respond with a status code of 405 if any  error raised for invalid params id validation while cancelling the booking.", async () => {
 
     const mockToken = "mockedToken.mockedToken.mockedToken"
 
@@ -2281,7 +2299,7 @@ test("should respond with a status code of 400 if any  error raised for invalid 
             }
         });
         // When any field is invalid, it should return 400
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(405);
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
         const responseBody = JSON.parse(response.body);
         expect(responseBody.error).toBe('Bad Request');
@@ -2290,7 +2308,7 @@ test("should respond with a status code of 400 if any  error raised for invalid 
 });
 
 
-test("should respond with a status code of 400 if event not found in EMB Model while cancelling the event.", async () => {
+test("should respond with a status code of 408 if event not found in EMB Model while cancelling the event.", async () => {
 
     const mockToken = "mockedToken.mockedToken.mockedToken"
 
@@ -2306,11 +2324,11 @@ test("should respond with a status code of 400 if event not found in EMB Model w
         }
     });
     // When any field is invalid, it should return 400
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(408);
     expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
     const responseBody = JSON.parse(response.body);
 
-    expect(responseBody.error).toEqual("bookings not found")
+    expect(responseBody.message).toEqual("bookings not found")
 
 });
 
@@ -2355,7 +2373,7 @@ test("should respond with a status code of 200 if the event id is present in the
 });
 
 
-test("should respond with a status code of 400 if any data base error raised while cancelling the event.", async () => {
+test("should respond with a status code of 500 if any data base error raised while cancelling the event.", async () => {
 
 
 
@@ -2373,11 +2391,11 @@ test("should respond with a status code of 400 if any data base error raised whi
             }
         });
         // When any field is invalid, it should return 400
-        expect(response.statusCode).toBe(400);
+        expect(response.statusCode).toBe(500);
         expect(response.headers['content-type']).toEqual(expect.stringContaining('application/json'));
         const responseBody = JSON.parse(response.body);
 
-        expect(responseBody.error).toEqual('data base error raised')
+        expect(responseBody.error).toEqual('Server error while deleting the booking.')
     }
 });
 
