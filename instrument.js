@@ -2,9 +2,12 @@ import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from '@sentry/profiling-node';
 
 // Ensure to call this before importing any other modules!
+
+// move this data source name to .env file
 Sentry.init({
-  //dsn:"https://d7452b6c86e81ebb5746d73b0233dbd4@o4508839985086464.ingest.us.sentry.io/4508850576556032",
-  dsn: "https://7577fa328334ae33de7f56c949d8979f@o4508852005896192.ingest.us.sentry.io/4508852025425920",
+  dsn:"https://d7452b6c86e81ebb5746d73b0233dbd4@o4508839985086464.ingest.us.sentry.io/4508850576556032",
+
+  //dsn: "https://7577fa328334ae33de7f56c949d8979f@o4508852005896192.ingest.us.sentry.io/4508852025425920",
 
 
   integrations: [
