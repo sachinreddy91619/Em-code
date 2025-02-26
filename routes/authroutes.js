@@ -34,7 +34,7 @@ async function authroutes(fastify, options) {
 
 
 
-
+// this is the register route
     fastify.post('/register', {
         schema: registerSwagger.schema,
         preHandler:
@@ -58,6 +58,7 @@ async function authroutes(fastify, options) {
             }
     }, register); // register route
 
+    // this is the login route
     fastify.post('/login', {
 
         schema: loginSwagger.schema,
@@ -95,6 +96,8 @@ async function authroutes(fastify, options) {
     //             })
     //     }
     // },logout); // logout route
+
+    // this is the logout route
 
     fastify.post('/logout', {
 

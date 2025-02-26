@@ -15,6 +15,8 @@ import app from '../app.js';
 
 
 // The is the  main route for posting the data in to the data-base
+
+//  logic for creating an event
 export const createEvent = async (request, reply) => {
 
     console.log("this is the starting of the create route");
@@ -212,9 +214,6 @@ export const updateevent = async (request, reply) => {
 
 // This is the route for deleting an event
 
-
-
-// This is the route for deleting an booking
 export const deleteevent = async (request, reply) => {
     try {
 
@@ -288,6 +287,8 @@ export const loc = async (request, reply) => {
 }
 
 
+
+// This is the route for getting events based on the location
 export const locationevent = async (request, reply) => {
     try {
 
@@ -537,7 +538,7 @@ export const booking = async (request, reply) => {
 
 
 
-
+// this is the route for cancelling the booking
 export const eventdelete = async (request, reply) => {
 
 

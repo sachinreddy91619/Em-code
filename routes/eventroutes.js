@@ -70,6 +70,7 @@ async function eventRoutes(fastify, options) {
 
   // fastify.post('/create', { schema: createEventSchema, preHandler: [auth, roleauth(['admin'])] }, createEvent);
 
+
   fastify.post('/create', {
 
     schema: CreateESwagger.schema,
@@ -387,7 +388,7 @@ async function eventRoutes(fastify, options) {
       }
   }, loc);
 
-
+// this route is to get the events for the particular location
   fastify.get('/eventsforlocation', {
 
     schema: EventsForLocationUSwagger.schema,
@@ -567,7 +568,7 @@ async function eventRoutes(fastify, options) {
   }, booking);
 
 
-  // this route is to delete the event 
+  // this route is to cancelling booking  of the event 
 
 
   fastify.delete('/cc/:id', {

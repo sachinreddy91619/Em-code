@@ -84,7 +84,21 @@ export const registerSwagger = {
                                 message: { type: "string", example: "Username already exists. Try with another username"}
                         },
                     },
-
+//from the middle ware errors the responses are :
+406: {
+    description: "user is logged out so need to re login. {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "User is logged out, access denied" }
+    }
+},
+498: {
+    description: "invalid token or expired token {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "Invalid or expired token" }
+    }
+},
                 //     400 _validation_error :{
                 //         description: "Bad request (either missing fields or validation errors)",
                 //         type: "object",

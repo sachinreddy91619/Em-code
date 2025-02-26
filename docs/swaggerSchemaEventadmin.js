@@ -137,6 +137,21 @@ export const CreateESwagger = {
                     message: { type: "string", example: "Event date must be in the future." }
                 }
             },
+            //from the middle ware errors the responses are :
+  406: {
+    description: "user is logged out so need to re login. {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "User is logged out, access denied" }
+    }
+},
+498: {
+    description: "invalid token or expired token {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "Invalid or expired token" }
+    }
+},
 
             500: {
                 description: "Server error",
@@ -206,6 +221,21 @@ export const GetESwagger = {
                     message: { type: "string", example: "User role not having the permissions to do" }
                 }
             },
+            //from the middle ware errors the responses are :
+  406: {
+    description: "user is logged out so need to re login. {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "User is logged out, access denied" }
+    }
+},
+498: {
+    description: "invalid token or expired token {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "Invalid or expired token" }
+    }
+},
             500: {
                 description: "Server error",
                 type: "object",
@@ -292,6 +322,21 @@ export const GetByIdESwagger = {
                     error: { type: "string", example: "event not found" }
                 }
             },
+            //from the middle ware errors the responses are :
+  406: {
+    description: "user is logged out so need to re login. {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "User is logged out, access denied" }
+    }
+},
+498: {
+    description: "invalid token or expired token {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "Invalid or expired token" }
+    }
+},
             500: {
                 description: "Server error",
                 type: "object",
@@ -427,6 +472,21 @@ export const UpdateByIdESwagger = {
                     message: { type: "string", example: "The body is not matching has per  requirements, to update the events of the particular event manager" }
                 }     
             },
+            //from the middle ware errors the responses are :
+  406: {
+    description: "user is logged out so need to re login. {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "User is logged out, access denied" }
+    }
+},
+498: {
+    description: "invalid token or expired token {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "Invalid or expired token" }
+    }
+},
             500: {
                 description: "Server error",
                 type: "object",
@@ -498,6 +558,21 @@ export const DeleteByIdESwagger = {
                     error: { type: "string", example: "event not found" }
                 }
             },
+            //from the middle ware errors the responses are :
+  406: {
+    description: "user is logged out so need to re login. {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "User is logged out, access denied" }
+    }
+},
+498: {
+    description: "invalid token or expired token {from the middleware}.",
+    type: "object",
+    properties: {
+        error: { type: "string", example: "Invalid or expired token" }
+    }
+},
             500: {
                 description: "Server error",
                 type: "object",
