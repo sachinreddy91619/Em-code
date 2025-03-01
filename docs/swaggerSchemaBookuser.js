@@ -1,3 +1,4 @@
+
 export const LocationUSwagger = {
     schema: {
         description: "Save user location (Authenticated Users Only)",
@@ -19,7 +20,7 @@ export const LocationUSwagger = {
             type: "object",
             properties: {
                 eventneedlocation: {
-                   // type: "string",
+                    // type: "string",
                     example: "Hyderabad",
                     description: "Location needed for the event"
                 }
@@ -39,7 +40,7 @@ export const LocationUSwagger = {
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "The authorization header is required, to provide the location of the user"}
+                    message: { type: "string", example: "The authorization header is required, to provide the location of the user" }
                 }
             },
             405: {
@@ -47,24 +48,24 @@ export const LocationUSwagger = {
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "The body is not matching has per  requirements, to provide the location of the user"}
+                    message: { type: "string", example: "The body is not matching has per  requirements, to provide the location of the user" }
                 }
             },
-  //from the middle ware errors the responses are :
-  406: {
-    description: "user is logged out so need to re login. {from the middleware}.",
-    type: "object",
-    properties: {
-        error: { type: "string", example: "User is logged out, access denied" }
-    }
-},
-498: {
-    description: "invalid token or expired token {from the middleware}.",
-    type: "object",
-    properties: {
-        error: { type: "string", example: "Invalid or expired token" }
-    }
-},
+            //from the middle ware errors the responses are :
+            406: {
+                description: "user is logged out so need to re login. {from the middleware}.",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "User is logged out, access denied" }
+                }
+            },
+            498: {
+                description: "invalid token or expired token {from the middleware}.",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "Invalid or expired token" }
+                }
+            },
 
 
             // 401: {
@@ -103,25 +104,63 @@ export const EventsForLocationUSwagger = {
             //required: ["Authorization"]
         },
         response: {
+            // 200: {
+            //     description: "List of events for the user's location",
+            //     type: "array",
+            //     items: {
+            //         type: "object",
+            //         properties: {
+            //             _id: { type: "string", example: "679a61e495e3ea757f90448e" },
+            //             userId: { type: "string", example: "679a611595e3ea757f90448b" },
+            //             eventname: { type: "string", example: "Tech Meetup 2025" },
+            //             eventdate: { type: "string", format: "date", example: "2025-08-20" },
+            //             eventlocation: { type: "string", example: "Hyderabad" },
+            //             eventtime: { type: "string", example: "18:00:00" },
+            //             amountrange: { type: "number", example: 10 },
+            //             totalseats: { type: "number", example: 100 },
+            //             availableseats: { type: "number", example: 78 },
+            //             bookedseats: { type: "number", example: 22 }
+            //         },
+            //     },
+            // }, 
             200: {
                 description: "List of events for the user's location",
-                type: "array",
-                items: {
-                    type: "object",
-                    properties: {
-                        _id: { type: "string", example: "679a61e495e3ea757f90448e" },
-                        userId: { type: "string", example: "679a611595e3ea757f90448b" },
-                        eventname: { type: "string", example: "Tech Meetup 2025" },
-                        eventdate: { type: "string", format: "date", example: "2025-08-20" },
-                        eventlocation: { type: "string", example: "Hyderabad" },
-                        eventtime: { type: "string", example: "18:00:00" },
-                        amountrange: { type: "number", example: 10 },
-                        totalseats: { type: "number", example: 100 },
-                        availableseats: { type: "number", example: 78 },
-                        bookedseats: { type: "number", example: 22 }
+                type: "object",
+                properties: {
+                    "No Of Event Found  for this location": {
+                        type: "number",
+                        example: 73
+
                     },
-                },
+                    "Events": {
+                        type: "array",
+                        "items": {
+                            type: "object",
+                            properties: {
+                                eventname: { type: "string", example: "Tech Conference 2025" },
+                                eventdate: {
+                                    type: "string",
+                                    // format: "date",
+                                    example: "2025-07-15"
+                                },
+                                eventlocation: { type: "string", example: "Hyderabad" },
+                                amountrange: { type: "number", example: 1500 },
+                                eventtime: { type: "string", example: "18:30:00" },
+                                totalseats: { type: "integer", example: 200 },
+                                availableseats: { type: "integer", example: 180 },
+                                bookedseats: { type: "integer", example: 20 },
+                                userId: { type: "string", example: "60f7b2c8e9f3c20017045a2d" },
+                                __v: { type: "number", example: 0 }
+
+
+
+                            }
+                        }
+                    }
+
+                }
             },
+
             400: {
                 description: "Bad request (validation errors , here error is in the header ",
                 type: "object",
@@ -144,8 +183,8 @@ export const EventsForLocationUSwagger = {
                     message: { type: "string", example: "No events found for this location" }
                 }
             },
-              //from the middle ware errors the responses are :
-              406: {
+            //from the middle ware errors the responses are :
+            406: {
                 description: "user is logged out so need to re login. {from the middleware}.",
                 type: "object",
                 properties: {
@@ -181,7 +220,7 @@ export const EventitUSwagger = {
             properties: {
                 id: {
                     type: "string",
-                   // pattern: "^[0-9a-fA-F]{24}$",
+                    // pattern: "^[0-9a-fA-F]{24}$",
                     description: "Event ID (MongoDB ObjectId format)",
                     example: "65d9f5e7b2eabc1234567890"
                 }
@@ -201,10 +240,11 @@ export const EventitUSwagger = {
         body: {
             type: "object",
             properties: {
-                NoOfSeatsBooking: { 
+                NoOfSeatsBooking: {
                     //type: "number", 
                     description: "Number of seats to book",
-                    example: 2 }
+                    example: 2
+                }
             },
 
         },
@@ -235,7 +275,7 @@ export const EventitUSwagger = {
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "The authorization header is required, while booking the no of seats for the event"}
+                    message: { type: "string", example: "The authorization header is required, while booking the no of seats for the event" }
                 }
             },
             405: {
@@ -243,7 +283,7 @@ export const EventitUSwagger = {
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "The  body is missing the required format while booking the event"}
+                    message: { type: "string", example: "The  body is missing the required format while booking the event" }
                 }
             },
             408: {
@@ -260,8 +300,8 @@ export const EventitUSwagger = {
                     message: { type: "string", example: "maximum number of seats can be booked :${event.availableseats}, so please reduce the number of seats" }
                 }
             },
-              //from the middle ware errors the responses are :
-              406: {
+            //from the middle ware errors the responses are :
+            406: {
                 description: "user is logged out so need to re login. {from the middleware}.",
                 type: "object",
                 properties: {
@@ -337,8 +377,8 @@ export const GetAllUSwagger = {
                     message: { type: "string", example: "The authorization header is required, to get the all of  bookings for this user" }
                 }
             },
-              //from the middle ware errors the responses are :
-              406: {
+            //from the middle ware errors the responses are :
+            406: {
                 description: "user is logged out so need to re login. {from the middleware}.",
                 type: "object",
                 properties: {
@@ -386,7 +426,7 @@ export const BookingUSwagger = {
             type: "object",
             properties: {
                 Authorization: {
-                  // type: "string",
+                    // type: "string",
                     description: "Bearer token for authentication",
                     example: "Bearer your_jwt_token_here"
                 }
@@ -441,8 +481,8 @@ export const BookingUSwagger = {
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "The authorization header is required, while updating the bookings of  the no of seats for the event"}
-            },
+                    message: { type: "string", example: "The authorization header is required, while updating the bookings of  the no of seats for the event" }
+                },
             },
 
             405: {
@@ -450,24 +490,24 @@ export const BookingUSwagger = {
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "The Body is not Matching has per the requirements, give correct body for updation"}
-            },
+                    message: { type: "string", example: "The Body is not Matching has per the requirements, give correct body for updation" }
+                },
             },
             408: {
                 description: "Bad request (validation errors the Params  is not matching has per the requirements)",
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "The params is not Matching has per the requirements, give correct params id for updation"}
-            },
+                    message: { type: "string", example: "The params is not Matching has per the requirements, give correct params id for updation" }
+                },
             },
             410: {
                 description: "Bad request (validation errors , event not found for the given id while updation)",
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "event not found for the given params id while updation"}
-            },
+                    message: { type: "string", example: "event not found for the given params id while updation" }
+                },
             },
 
             415: {
@@ -475,11 +515,11 @@ export const BookingUSwagger = {
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "maximum number of seats can be booked :${event1.availableseats}, so please reduce the number of seats"}
+                    message: { type: "string", example: "maximum number of seats can be booked :${event1.availableseats}, so please reduce the number of seats" }
+                },
             },
-            },
-              //from the middle ware errors the responses are :
-              406: {
+            //from the middle ware errors the responses are :
+            406: {
                 description: "user is logged out so need to re login. {from the middleware}.",
                 type: "object",
                 properties: {
@@ -496,7 +536,7 @@ export const BookingUSwagger = {
 
 
 
-            
+
             // 404: {
             //     description: "Booking not found",
             //     type: "object",
@@ -568,32 +608,32 @@ export const DeleteUSwagger = {
                 type: "object",
                 properties: {
                     error: { type: "string", example: "Bad Request" },
-                    message: { type: "string", example: "The params is not Matching has per the requirements, give correct params id for cancelling the event booking"}
+                    message: { type: "string", example: "The params is not Matching has per the requirements, give correct params id for cancelling the event booking" }
+                },
             },
-        },
-        408: {
-            description: "Bad request (validation errors the params is not matching has per the requirements)",
-            type: "object",
-            properties: {
-               
-                message: { type: "string", example: "bookings not found"}
-        },
-    },
-      //from the middle ware errors the responses are :
-      406: {
-        description: "user is logged out so need to re login. {from the middleware}.",
-        type: "object",
-        properties: {
-            error: { type: "string", example: "User is logged out, access denied" }
-        }
-    },
-    498: {
-        description: "invalid token or expired token {from the middleware}.",
-        type: "object",
-        properties: {
-            error: { type: "string", example: "Invalid or expired token" }
-        }
-    },
+            408: {
+                description: "Bad request (validation errors the params is not matching has per the requirements)",
+                type: "object",
+                properties: {
+
+                    message: { type: "string", example: "bookings not found" }
+                },
+            },
+            //from the middle ware errors the responses are :
+            406: {
+                description: "user is logged out so need to re login. {from the middleware}.",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "User is logged out, access denied" }
+                }
+            },
+            498: {
+                description: "invalid token or expired token {from the middleware}.",
+                type: "object",
+                properties: {
+                    error: { type: "string", example: "Invalid or expired token" }
+                }
+            },
 
             500: {
                 description: "Server error",
@@ -605,6 +645,3 @@ export const DeleteUSwagger = {
         }
     }
 };
-
-
-

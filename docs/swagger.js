@@ -1,10 +1,12 @@
 
 
+
+
 import FastifySwagger from '@fastify/swagger';
 import FastifySwaggerUI from '@fastify/swagger-ui';
 
 export default async function setupSwagger(app) {
-    
+
     await app.register(FastifySwagger, {
         swagger: {
             info: {
@@ -24,11 +26,16 @@ export default async function setupSwagger(app) {
                 }
             ],
             tags: [{
-                name: "FOR REGISTRATION/LOGIN/LOGOUT", description: "Endpoints for the user/admin registartion and login  , logout"
+                name: "FOR REGISTRATION/LOGIN/LOGOUT", description: "Endpoints for the user/admin registartion and login  , logout ,forgotpassword"
             }, {
                 name: "EVENT-MANAGEMENT-ADMIN", description: "Admin endpoints for  managing events"
             },
-            { name: "BOOKING-USER", description: "User endpoints for booking events" }],
+            { name: "BOOKING-USER", description: "User endpoints for booking events" },
+
+            { name: "GENERAL OPERATIONS", description: "General info routes" }
+
+
+            ],
             securityDefinitions: {
                 BearerAuth: {
                     type: 'apiKey',
@@ -53,4 +60,3 @@ export default async function setupSwagger(app) {
         },
     });
 }
-

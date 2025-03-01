@@ -1,4 +1,6 @@
 
+
+
 import '../instrument.js';
 
 import * as Sentry from "@sentry/node";
@@ -15,6 +17,8 @@ import app from '../app.js';
 
 
 // The is the  main route for posting the data in to the data-base
+
+//  logic for creating an event
 export const createEvent = async (request, reply) => {
 
     console.log("this is the starting of the create route");
@@ -59,7 +63,7 @@ export const createEvent = async (request, reply) => {
     } catch (err) {
         Sentry.captureException(err);
         reply.status(500).send({ error: 'Database save failed,Error creating the Event' })
-    } 
+    }
 
 };
 
@@ -146,7 +150,7 @@ export const getbyid = async (request, reply) => {
 
     } catch (err) {
         Sentry.captureException(err);
-        reply.status(500).send({ error:'Internal Server Error while while executing the getbyId' })
+        reply.status(500).send({ error: 'Internal Server Error while while executing the getbyId' })
     }
 }
 
@@ -212,9 +216,6 @@ export const updateevent = async (request, reply) => {
 
 // This is the route for deleting an event
 
-
-
-// This is the route for deleting an booking
 export const deleteevent = async (request, reply) => {
     try {
 
@@ -278,7 +279,14 @@ export const loc = async (request, reply) => {
             userId: request.user.id
         });
         console.log(request.user.id)
+
+        // await EventLoc.createIndex({"createdAt":1},{
+        //     expireAfterSeconds:240
+
+        //     })
+
         await event.save();
+
         reply.status(200).send({ message: "location saved for this user" });
 
     } catch (err) {
@@ -288,6 +296,8 @@ export const loc = async (request, reply) => {
 }
 
 
+
+// This is the route for getting events based on the location
 export const locationevent = async (request, reply) => {
     try {
 
@@ -310,12 +320,21 @@ export const locationevent = async (request, reply) => {
         // Find events based on the user's location
         const event1 = await Event.find({ eventlocation: loc });
 
+        const x = await Event.aggregate([{ $match: { eventlocation: loc } }, { $group: { _id: null, count: { $sum: 1 } } }]);
+
+        console.log("To know the cout of the  given location:", x)
+
         if (!event1 || event1.length === 0) {
             return reply.status(405).send({ message: "No events found for this location" });
         }
 
         console.log(event1)
-        reply.send(event1);
+        //reply.send(event1);
+        // reply.send({ "No Of Event Found  for this location": x[0].count, event1 });
+        reply.send({
+            "No Of Event Found  for this location": x.length > 0 ? x[0].count : 0,
+            "Events": event1 // Explicitly defining the key as "Events"
+        });
 
 
     }
@@ -528,7 +547,7 @@ export const booking = async (request, reply) => {
     catch (err) {
         Sentry.captureException(err);
 
-        reply.status(500).send({ error:"Server error while updating the booking." });
+        reply.status(500).send({ error: "Server error while updating the booking." });
 
     }
 }
@@ -537,7 +556,7 @@ export const booking = async (request, reply) => {
 
 
 
-
+// this is the route for cancelling the booking
 export const eventdelete = async (request, reply) => {
 
 
@@ -584,6 +603,6 @@ export const eventdelete = async (request, reply) => {
 
     catch (err) {
         Sentry.captureException(err);
-        reply.status(500).send({ error:"Server error while deleting the booking." });
+        reply.status(500).send({ error: "Server error while deleting the booking." });
     }
 }

@@ -1,3 +1,4 @@
+
 // importing the Sentry module from the instrument.mjs file
 import './instrument.js';
 
@@ -7,6 +8,8 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import eventRou from './routes/eventroutes.js';
 import authRou from './routes/authroutes.js';
+
+import general from './routes/generalroutes.js';
 
 
 
@@ -96,6 +99,7 @@ mongoose.connect(process.env.MONGO_URL)
 
 app.register(eventRou, { prefix: '/event' });
 app.register(authRou, { prefix: '/auth' });
+app.register(general, { prefix: '/general' });
 
 app.setErrorHandler((error, request, reply) => {
     Sentry.captureException(error);
@@ -116,7 +120,7 @@ const PORT = process.env.PORT || 3000;
 //     app.log.info(`Server listening on ${address}`);
 // });
 
-app.listen({ port: PORT,host:"0.0.0.0" }, (err, address) => {
+app.listen({ port: PORT, host: "0.0.0.0" }, (err, address) => {
     if (err) {
         app.log.error(err);
         process.exit(1);
