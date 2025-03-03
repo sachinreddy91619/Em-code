@@ -29,6 +29,8 @@ import userLogoutValidation from '../validators/logout.js';
 import { logoutSwagger } from '../docs/SwaggerSchemaAuth.js';
 
 
+import { otpGeneration, passwordUpdation } from '../controllers/authopera.js';
+import { otpMiddleware } from '../middleware/otpmiddleware.js'
 
 async function authroutes(fastify, options) {
 
@@ -57,6 +59,41 @@ async function authroutes(fastify, options) {
                 }
             }
     }, register); // register route
+
+
+
+
+
+
+
+    fastify.post('/otpGeneration', {
+        preHandler: async (request, reply) => {
+
+
+        }
+    }, otpGeneration);
+
+
+    // this route is to updating the password
+    fastify.post('/forgotPass',
+        {
+            // schema: updationPasswordSwagger.schema,
+            preHandler:
+                async (request, reply) => {
+
+                    //const {error}=passwordUpdateValidation.validate(request.body);
+
+                    // if(error){
+                    //     return reply.status(400).send({
+                    //         error:'Bad Request',
+                    //         message:"Validation failed Body not matching the requirements check them once while updating the password"
+                    //     })
+                    // }
+
+                    await otpMiddleware(request, reply)
+                }
+        }, passwordUpdation);
+
 
     fastify.post('/login', {
 
