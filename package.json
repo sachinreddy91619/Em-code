@@ -27,6 +27,8 @@
     "mongoose": "^8.9.5",
     "nodemailer": "^6.10.0",
     "nodemon": "^3.1.9",
+    "pino": "^8.15.0",
+    "pino-std-serializers": "^3.2.0",
     "speakeasy": "^2.0.0"
   },
   "devDependencies": {
