@@ -292,41 +292,53 @@ export const login = async (request, reply) => {
         //console.log(data, "hey iam doing good hey iam doing good here ")
         // Userid=data._id;
 
-        const existingLog = await Logs.findOne({ UserId: user._id })
 
-        console.log(existingLog, "exisiting loger details here");
-        //DONE
-        if (existingLog) {
-            console.log("Existing log found, updating log:", existingLog);
-            existingLog.UserId = user._id,
-
-                existingLog.logintime = Date.now(),
-
-                existingLog.logouttime = null,
-
-                existingLog.UserToken = token
-
-            await existingLog.save();
-            console.log("Existing log updated:", existingLog);
-            // console.log("Existing log updated:", existingLog);
-        }
-        else {
-            console.log("No existing log found, creating new log.");
-            const user1 = new Logs({
-                //Userid:user._id,
-                UserId: user._id,
-
+        await Logs.findOneAndUpdate(
+            { UserId: user._id },  // Find log by UserId
+            {
                 logintime: Date.now(),
-
                 logouttime: null,
-
                 UserToken: token
-            });
+            },
+            { upsert: true, new: true }  // Create new log if not found
+        );
 
-            await user1.save();
-            console.log(user1, "document,done");
 
-        }
+        // const existingLog = await Logs.findOne({ UserId: user._id })
+
+        // console.log(existingLog, "exisiting loger details here");
+        // //DONE
+        // if (existingLog) {
+        //     console.log("Existing log found, updating log:", existingLog);
+        //     existingLog.UserId = user._id,
+
+        //         existingLog.logintime = Date.now(),
+
+        //         existingLog.logouttime = null,
+
+        //         existingLog.UserToken = token
+
+        //     await existingLog.save();
+        //     console.log("Existing log updated:", existingLog);
+        //     // console.log("Existing log updated:", existingLog);
+        // }
+        // else {
+        //     console.log("No existing log found, creating new log.");
+        //     const user1 = new Logs({
+        //         //Userid:user._id,
+        //         UserId: user._id,
+
+        //         logintime: Date.now(),
+
+        //         logouttime: null,
+
+        //         UserToken: token
+        //     });
+
+        //     await user1.save();
+        //     console.log(user1, "document,done");
+
+        // }
 
 
 
